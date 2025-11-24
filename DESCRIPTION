@@ -19,10 +19,13 @@ Suggests:
 Config/testthat/edition: 3
 Imports: 
     astgrepr,
+    cli,
     dplyr,
     purrr,
     quarto,
-    tibble
+    stringr,
+    tibble,
+    tidyr
 VignetteBuilder: 
      knitr, 
      quarto 
