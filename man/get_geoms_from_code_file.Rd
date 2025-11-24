@@ -2,14 +2,15 @@
 % Please edit documentation in R/extract_geoms.R
 \name{get_geoms_from_code_file}
 \alias{get_geoms_from_code_file}
-\title{Get geom usage from a file}
+\title{get_geoms_from_code_file}
 \usage{
 get_geoms_from_code_file(file_path, geoms_dataset)
 }
 \arguments{
 \item{file_path}{Path to a code file.}
 
-\item{geoms_dataset}{A data.frame containing a column 'geom_name' with the name of a geom of interest.}
+\item{geoms_dataset}{A data.frame containing a column 'geom_name' with the
+name of a geom of interest.}
 }
 \value{
 A tibble.

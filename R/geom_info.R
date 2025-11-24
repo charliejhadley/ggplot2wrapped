@@ -1,8 +1,15 @@
-## code to prepare `DATASET` dataset goes here
-library("tidyverse")
-library("ggtext")
-library("ggrepel")
-
+#' Get geoms from a package
+#'
+#' `get_geoms_from_package()` returns a data.frame containing all geoms from a
+#' package.
+#'
+#' @section What counts as a geom?
+#'
+#' For our purposes a geom function starts with "geom_" and that's it
+#'
+#' @param package_name Package name, as a string
+#' @returns A tibble.
+#' @export
 get_geoms_from_package <- function(package_name){
   tibble(
     geom_name = ls(paste0("package:", package_name)),
@@ -11,12 +18,20 @@ get_geoms_from_package <- function(package_name){
     filter(str_starts(geom_name, "geom_"))
 }
 
-vec_ggplot2_packages <- c("ggplot2", "ggrepel", "ggtext")
-
-data_geoms_basic <- vec_ggplot2_packages %>%
-  map_dfr(~get_geoms_from_package(.x)) %>%
-  distinct()
-
+#' Get docs details
+#'
+#' `get_docs_details()` extracts sections of a function documentation page as
+#' text
+#'
+#' @section What counts as a geom?
+#'
+#' For our purposes a geom function starts with "geom_" and that's it
+#'
+#' @param get_docs_details Name of geom
+#' @param package_name Package name
+#' @param section Section heading of docs page
+#' @returns A tibble.
+#' @export
 
 get_docs_details <- function(geom_name, package_name, section){
 
@@ -37,15 +52,3 @@ get_docs_details <- function(geom_name, package_name, section){
     str_replace_all("\n", "") %>%
     str_trim()
 }
-
-get_docs_details("geom_col", "ggplot2", "\\title")
-
-vectorised_get_docs_details <- Vectorize(get_docs_details)
-
-data_geoms_detailed <- data_geoms_basic %>%
-  mutate(docs_title = vectorised_get_docs_details(geom_name, package_name, "\\title"),
-         docs_description = vectorised_get_docs_details(geom_name, package_name, "\\description"))
-
-data_geoms <- data_geoms_detailed
-
-usethis::use_data(data_geoms, overwrite = TRUE)

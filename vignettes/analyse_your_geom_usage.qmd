@@ -1,9 +1,9 @@
 ---
-title: "analyse_your_geom_usage"
-output: rmarkdown::html_vignette
+title: Analyse your ggplot2 geom usage
+format: html
 vignette: >
-  %\VignetteIndexEntry{analyse_your_geom_usage}
-  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{Analyse your ggplot2 geom usage}
+  %\VignetteEngine{quarto::html}
   %\VignetteEncoding{UTF-8}
 ---
 
@@ -14,11 +14,21 @@ knitr::opts_chunk$set(
 )
 ```
 
+# Finding your files
+
+```{r}
+library("tidyverse")
+code_files <- get_code_file_info(c("~/Github/", "~/coding/r-projects-scrapbook/"), file_type = c(".qmd", ".R", ".Rmd"))
+```
+
+# 
+
 ```{r setup}
 library("ggplot2wrapped")
 library("tidyverse")
 library("RQuantLib")
 library("statebins")
+library("astgrepr")
 ```
 
 This utility function lists all of your code files:
@@ -39,7 +49,7 @@ code_files %>%
 Restricting ourselves to files created in a specific year we can find our geom_usage
 
 ```{r}
-target_year <- 2022
+target_year <- 2024
 data_target_year_geoms_raw <- code_files %>% 
   filter(year(created_time) == target_year) %>% 
    mutate(geom_usage = get_geoms_from_code_file(file_path, data_geoms)) 
@@ -48,7 +58,9 @@ data_target_year_geoms_raw <- code_files %>%
 ```{r}
 data_target_year_geoms_raw %>% 
   unnest(geom_usage) %>% 
-  filter(n_times_used > 0)
+  filter(n_times_used > 0) %>% 
+  select(geom_name, function_call) %>% 
+  unnest(function_call)
 ```
 
 ## Visualisation
@@ -179,5 +191,38 @@ data_geom_usage_by_date %>%
     strip.text.y.left = element_text(angle = 0,
                                      size = 12)
   )
+```
+
+# Code analysis again
+
+```{r}
+
+
+some_geom_call %>% 
+  astgrepr::tree_new() |>
+    astgrepr::tree_root() %>% 
+```
+
+```{r}
+data_target_year_geoms_raw %>% 
+  unnest(geom_usage) %>% 
+  filter(n_times_used > 0) %>% 
+  select(geom_name, geom_function_calls) %>% 
+  unnest(geom_function_calls) %>% 
+  unnest(geom_function_calls) %>% 
+  mutate(is_leaf = map(geom_function_calls, ~{tree_new(.x) %>% tree_root() %>% node_find(ast_rule(pattern = "geom_ribbon($$$A)")) %>%  node_is_leaf()})) 
+  unnest(is_leaf) %>% 
+  unnest(is_leaf)
+```
+
+
+# aes
+
+```{r}
+data_target_year_geoms_raw %>% unnest(geom_usage) %>% 
+  select(file_path, geom_name, n_args_in_call, n_times_used, function_call) %>% 
+  unnest(function_call) %>% 
+  filter(argument_name == "") %>% 
+  
 ```
 

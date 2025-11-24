@@ -3,16 +3,16 @@
 \docType{data}
 \name{data_geoms}
 \alias{data_geoms}
-\title{World Health Organization TB data}
+\title{Core geoms dataset}
 \format{
-\subsection{\code{who}}{
+\subsection{\code{data_geoms}}{
 
-A data frame with 7,240 rows and 60 columns:
+A data frame with 57 rows and 4 columns:
 \describe{
-\item{country}{Country name}
-\item{iso2, iso3}{2 & 3 letter ISO country codes}
-\item{year}{Year}
-...
+\item{geom_name}{Name of geom}
+\item{package_name}{Name of package containing geom}
+\item{docs_title}{Title of geom documentation page}
+\item{docs_description}{Description of geom documentation page}
 }
 }
 }
@@ -23,7 +23,7 @@ A data frame with 7,240 rows and 60 columns:
 data_geoms
 }
 \description{
-A subset of data from the World Health Organization Global Tuberculosis
-Report ...
+A dataset containing all geoms from the {ggplot2}, {ggrepel} and {ggtext}
+packages.
 }
 \keyword{datasets}

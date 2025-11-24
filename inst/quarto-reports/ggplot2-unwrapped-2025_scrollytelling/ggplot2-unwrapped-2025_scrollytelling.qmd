@@ -1,0 +1,57 @@
+---
+title: "ggplot2 wrapped 2025"
+format:
+  closeread-html:
+    remove-header-space: true
+    css: styles.css
+    narrative-font-family: Karla
+    narrative-text-color-sidebar: "#212529"
+echo: false
+warning: false
+message: false
+from: markdown+emoji
+params: 
+  executed_from: "direct_from_file"
+---
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(
+  dev = "ragg_png",
+  eval = TRUE,
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE
+)
+
+library("tidyverse")
+
+if (params$executed_from == "direct_from_file") {
+  load(here::here("inst/quarto-reports/ggplot2-unwrapped-2025_scrollytelling/data_test_scrollytelling.RData"))
+  quarto_scrollytellling_geom_data <- data_test_scrollytelling
+} else {
+  # Because Quarto params can't be tibbles instead we use temp .RData
+  load("quarto_scrollytellling_geom_data.RData")
+}
+
+```
+
+:::{.cr-section}
+
+```{r}
+params$executed_from
+```
+
+
+Draw your readers attention with focus effects. @cr-features
+
+:::{#cr-features}
+```{r}
+quarto_scrollytellling_geom_data %>% 
+  unnest(geom_usage) %>% 
+  filter(n_times_used > 0) %>% 
+  count(geom_name)
+```
+
+:::
+
+:::
