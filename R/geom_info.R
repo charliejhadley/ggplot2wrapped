@@ -11,11 +11,11 @@
 #' @returns A tibble.
 #' @export
 get_geoms_from_package <- function(package_name){
-  tibble(
+  dplyr::tibble(
     geom_name = ls(paste0("package:", package_name)),
     package_name = package_name
   ) |>
-    filter(str_starts(geom_name, "geom_"))
+    dplyr::filter(str_starts(geom_name, "geom_"))
 }
 
 #' Get docs details
@@ -39,7 +39,7 @@ get_docs_details <- function(geom_name, package_name, section){
     help(geom_name, package = as.character(package_name))
   )
 
-  section_indexes <- map(rd_object, ~attr(.x, "Rd_tag")) |>
+  section_indexes <- purrr::map(rd_object, ~attr(.x, "Rd_tag")) |>
     as.character() |>
     setNames(1:length(.), .)
 
