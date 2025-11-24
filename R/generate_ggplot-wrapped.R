@@ -32,8 +32,8 @@ ggplot_wrapped_2025 <- function(paths, file_type = c(".R", ".qmd", "Rmd"), repor
 
   }
 
-  data_target_year_geoms_raw <- code_files %>%
-    dplyr::filter(year(created_time) == year_wrapped) %>%
+  data_target_year_geoms_raw <- code_files |>
+    dplyr::filter(year(created_time) == year_wrapped) |>
     dplyr::mutate(geom_usage = get_geoms_from_code_file(file_path, data_geoms))
 
   temp_dir <- tempfile()

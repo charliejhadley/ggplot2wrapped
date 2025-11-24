@@ -14,7 +14,7 @@ get_geoms_from_package <- function(package_name){
   tibble(
     geom_name = ls(paste0("package:", package_name)),
     package_name = package_name
-  ) %>%
+  ) |>
     filter(str_starts(geom_name, "geom_"))
 }
 
@@ -39,16 +39,16 @@ get_docs_details <- function(geom_name, package_name, section){
     help(geom_name, package = as.character(package_name))
   )
 
-  section_indexes <- map(rd_object, ~attr(.x, "Rd_tag")) %>%
-    as.character() %>%
+  section_indexes <- map(rd_object, ~attr(.x, "Rd_tag")) |>
+    as.character() |>
     setNames(1:length(.), .)
 
   selected_section_index <- section_indexes[[section]]
 
-  rd_object[[selected_section_index]] %>%
-    as.character() %>%
-    paste(collapse = " ") %>%
-    str_replace_all("list\\(\\\"([^\\\"]*)\\\"\\)", "\\1") %>%
-    str_replace_all("\n", "") %>%
+  rd_object[[selected_section_index]] |>
+    as.character() |>
+    paste(collapse = " ") |>
+    str_replace_all("list\\(\\\"([^\\\"]*)\\\"\\)", "\\1") |>
+    str_replace_all("\n", "") |>
     str_trim()
 }

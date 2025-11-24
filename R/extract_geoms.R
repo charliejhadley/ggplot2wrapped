@@ -43,7 +43,7 @@ get_geoms_from_code_file <- function(file_path, geoms_dataset){
   vec_geoms <- dplyr::pull(geoms_dataset, geom_name)
 
 
-  geoms_rule_list <- vec_geoms %>%
+  geoms_rule_list <- vec_geoms |>
     purrr::map(~ {
       # The pattern "geom_name($$$A)" matches the geom call regardless of arguments.
       pattern_str <- paste0(.x, "($$$A)")
@@ -60,16 +60,16 @@ get_geoms_from_code_file <- function(file_path, geoms_dataset){
   )
 
 
-  data_geom_usage <- data_nodes %>%
-    astgrepr::node_text_all() %>%
-    tibble::enframe(name = "geom_name", value = "geom_function_calls") %>%
-    tidyr::unnest(geom_function_calls) %>%
-    tidyr::unnest(geom_function_calls) %>%
-    mutate(function_call = extract_geom_arguments(geom_function_calls)) %>%
-    mutate(n_args_in_call = map_dbl(function_call, nrow)) %>%
-    mutate(has_aes = map_lgl(function_call, ~any(.x[["is_aes"]]))) %>%
-    select(-geom_function_calls) %>%
-    dplyr::mutate(n_times_used = dplyr::n(), .by = geom_name) %>%
+  data_geom_usage <- data_nodes |>
+    astgrepr::node_text_all() |>
+    tibble::enframe(name = "geom_name", value = "geom_function_calls") |>
+    tidyr::unnest(geom_function_calls) |>
+    tidyr::unnest(geom_function_calls) |>
+    mutate(function_call = extract_geom_arguments(geom_function_calls)) |>
+    mutate(n_args_in_call = map_dbl(function_call, nrow)) |>
+    mutate(has_aes = map_lgl(function_call, ~any(.x[["is_aes"]]))) |>
+    select(-geom_function_calls) |>
+    dplyr::mutate(n_times_used = dplyr::n(), .by = geom_name) |>
     dplyr::left_join(geoms_dataset,
               by = c("geom_name"))
 
@@ -113,32 +113,32 @@ extract_geom_arguments <- function(geom_call){
   call_list <- as.list(expr[[1]])
   args_list <- call_list[-1]
 
-  raw_args_df <- args_list %>%
+  raw_args_df <- args_list |>
     tibble::enframe(name = "argument_name",
-            value = "argument_value") %>%
-    dplyr::mutate(argument_number = row_number()) %>%
+            value = "argument_value") |>
+    dplyr::mutate(argument_number = row_number()) |>
     dplyr::mutate(argument_value = as.character(argument_value),
            argument_name = as.character(argument_name))
 
   # remove positional arg names
-  raw_args_df <- raw_args_df %>%
+  raw_args_df <- raw_args_df |>
     dplyr::mutate(argument_name = dplyr::if_else(stringr::str_detect(argument_name, "^[0-9]{1,}"), "", argument_name))
 
 
-  args_without_aes <- raw_args_df %>%
-    dplyr::filter(argument_name != "aes") %>%
+  args_without_aes <- raw_args_df |>
+    dplyr::filter(argument_name != "aes") |>
     dplyr::filter(!(argument_name == "" &
-           stringr::str_detect(argument_value, "^aes[(]"))) %>%
+           stringr::str_detect(argument_value, "^aes[(]"))) |>
     dplyr::mutate(is_aes = 0)
 
-  args_aes <- raw_args_df %>%
+  args_aes <- raw_args_df |>
     dplyr::filter((argument_name == "" &
-               stringr::str_detect(argument_value, "^aes[(]")) | argument_name == "aes") %>%
+               stringr::str_detect(argument_value, "^aes[(]")) | argument_name == "aes") |>
     dplyr::mutate(is_aes = 1)
 
   args_all <- dplyr::bind_rows(args_without_aes,
-            args_aes) %>%
-    dplyr::mutate(is_aes = as.logical(is_aes)) %>%
+            args_aes) |>
+    dplyr::mutate(is_aes = as.logical(is_aes)) |>
     dplyr::select(is_aes, everything())
 
   args_all

@@ -46,9 +46,9 @@ Draw your readers attention with focus effects. @cr-features
 
 :::{#cr-features}
 ```{r}
-quarto_scrollytellling_geom_data %>% 
-  unnest(geom_usage) %>% 
-  filter(n_times_used > 0) %>% 
+quarto_scrollytellling_geom_data |> 
+  unnest(geom_usage) |> 
+  filter(n_times_used > 0) |> 
   count(geom_name)
 ```
 

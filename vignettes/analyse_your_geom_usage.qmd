@@ -39,9 +39,9 @@ code_files <- get_code_file_info(c("~/Github/", "~/coding/r-projects-scrapbook/"
 
 How many files did I create and modify this year?
 ```{r}
-code_files %>% 
+code_files |> 
   mutate(year_modified = year(modified_time),
-         year_created = year(created_time)) %>% 
+         year_created = year(created_time)) |> 
   count(year_created)
 ```
 
@@ -50,16 +50,16 @@ Restricting ourselves to files created in a specific year we can find our geom_u
 
 ```{r}
 target_year <- 2024
-data_target_year_geoms_raw <- code_files %>% 
-  filter(year(created_time) == target_year) %>% 
+data_target_year_geoms_raw <- code_files |> 
+  filter(year(created_time) == target_year) |> 
    mutate(geom_usage = get_geoms_from_code_file(file_path, data_geoms)) 
 ```
 
 ```{r}
-data_target_year_geoms_raw %>% 
-  unnest(geom_usage) %>% 
-  filter(n_times_used > 0) %>% 
-  select(geom_name, function_call) %>% 
+data_target_year_geoms_raw |> 
+  unnest(geom_usage) |> 
+  filter(n_times_used > 0) |> 
+  select(geom_name, function_call) |> 
   unnest(function_call)
 ```
 
@@ -120,14 +120,14 @@ geom_rtile <- function(mapping = NULL, data = NULL,
 ```
 
 ```{r}
-data_geom_usage_by_date <- data_target_year_geoms_raw %>% 
-  unnest(geom_usage) %>% 
-  mutate(modified_date = as_date(modified_time)) %>% 
-  select(geom_name, package_name, modified_time, n_times_used) %>% 
-  filter(n_times_used > 0) %>% 
-  mutate(modified_date = as_date(modified_time)) %>% 
-  summarise(n_times_used = sum(n_times_used), .by = c(geom_name, modified_date)) %>% 
-  complete(nesting(geom_name), modified_date = seq(ymd(paste0(target_year, "-01-01")), ymd(paste0(target_year, "-12-31")), by = "day"), fill = list(n_times_used = NA)) %>% 
+data_geom_usage_by_date <- data_target_year_geoms_raw |> 
+  unnest(geom_usage) |> 
+  mutate(modified_date = as_date(modified_time)) |> 
+  select(geom_name, package_name, modified_time, n_times_used) |> 
+  filter(n_times_used > 0) |> 
+  mutate(modified_date = as_date(modified_time)) |> 
+  summarise(n_times_used = sum(n_times_used), .by = c(geom_name, modified_date)) |> 
+  complete(nesting(geom_name), modified_date = seq(ymd(paste0(target_year, "-01-01")), ymd(paste0(target_year, "-12-31")), by = "day"), fill = list(n_times_used = NA)) |> 
   mutate(
     n_week = week(modified_date),
     n_day = wday(modified_date, week_start = 7),
@@ -135,13 +135,13 @@ data_geom_usage_by_date <- data_target_year_geoms_raw %>%
     weekday_label = fct_rev(weekday_label),
     month = month(modified_date, label = TRUE, abbr = TRUE),
     is_workday = as.numeric(RQuantLib::isBusinessDay("UnitedKingdom", modified_date))
-  ) %>% 
+  ) |> 
   mutate(total_times_used = sum(n_times_used, na.rm = TRUE), .by = geom_name)
 
 
-vec_top_5_geoms <- data_geom_usage_by_date %>% 
-  distinct(geom_name, total_times_used) %>% 
-  slice_max(total_times_used, n = 5) %>% 
+vec_top_5_geoms <- data_geom_usage_by_date |> 
+  distinct(geom_name, total_times_used) |> 
+  slice_max(total_times_used, n = 5) |> 
   pull(geom_name)
 ```
 
@@ -149,10 +149,10 @@ vec_top_5_geoms <- data_geom_usage_by_date %>%
 tab <- data_geom_usage_by_date |> 
   summarise(nmin = min(n_week), .by = "month")
 
-data_geom_usage_by_date %>% 
-  filter(geom_name %in% vec_top_5_geoms) %>% 
+data_geom_usage_by_date |> 
+  filter(geom_name %in% vec_top_5_geoms) |> 
   mutate(geom_name = fct_reorder(geom_name, total_times_used),
-         geom_name = fct_rev(geom_name)) %>% 
+         geom_name = fct_rev(geom_name)) |> 
   ggplot() +
   aes(n_week, weekday_label) +
   geom_rtile(
@@ -198,20 +198,20 @@ data_geom_usage_by_date %>%
 ```{r}
 
 
-some_geom_call %>% 
+some_geom_call |> 
   astgrepr::tree_new() |>
-    astgrepr::tree_root() %>% 
+    astgrepr::tree_root() |> 
 ```
 
 ```{r}
-data_target_year_geoms_raw %>% 
-  unnest(geom_usage) %>% 
-  filter(n_times_used > 0) %>% 
-  select(geom_name, geom_function_calls) %>% 
-  unnest(geom_function_calls) %>% 
-  unnest(geom_function_calls) %>% 
-  mutate(is_leaf = map(geom_function_calls, ~{tree_new(.x) %>% tree_root() %>% node_find(ast_rule(pattern = "geom_ribbon($$$A)")) %>%  node_is_leaf()})) 
-  unnest(is_leaf) %>% 
+data_target_year_geoms_raw |> 
+  unnest(geom_usage) |> 
+  filter(n_times_used > 0) |> 
+  select(geom_name, geom_function_calls) |> 
+  unnest(geom_function_calls) |> 
+  unnest(geom_function_calls) |> 
+  mutate(is_leaf = map(geom_function_calls, ~{tree_new(.x) |> tree_root() |> node_find(ast_rule(pattern = "geom_ribbon($$$A)")) |>  node_is_leaf()})) 
+  unnest(is_leaf) |> 
   unnest(is_leaf)
 ```
 
@@ -219,10 +219,10 @@ data_target_year_geoms_raw %>%
 # aes
 
 ```{r}
-data_target_year_geoms_raw %>% unnest(geom_usage) %>% 
-  select(file_path, geom_name, n_args_in_call, n_times_used, function_call) %>% 
-  unnest(function_call) %>% 
-  filter(argument_name == "") %>% 
+data_target_year_geoms_raw |> unnest(geom_usage) |> 
+  select(file_path, geom_name, n_args_in_call, n_times_used, function_call) |> 
+  unnest(function_call) |> 
+  filter(argument_name == "") |> 
   
 ```
 
