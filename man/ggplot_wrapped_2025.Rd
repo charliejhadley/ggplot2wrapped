@@ -8,6 +8,7 @@ ggplot_wrapped_2025(
   data_geom_usage,
   data_geom_details = ggplot2wrapped::data_geoms,
   report_type = c("scrollytelling"),
+  report_year = 2025,
   export_path = ".",
   exported_report_name = "your-ggplot2-wrapped.html",
   overwrite = TRUE

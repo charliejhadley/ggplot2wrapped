@@ -2,7 +2,7 @@ library("tidyverse")
 library("ggplot2wrapped")
 
 code_files <- get_code_file_info(c("~/Github/", "~/coding/r-projects-scrapbook/"), file_type = c(".qmd", ".R", ".Rmd"))
-target_year <- 2022
+target_year <- 2025
 
 data_geom_usage_2022 <- code_files |>
   filter(year(created_time) == target_year) |>

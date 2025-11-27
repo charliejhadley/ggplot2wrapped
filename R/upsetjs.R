@@ -16,9 +16,12 @@ make_geom_interactive_upset_chart <- function(data_geom_usage, height = NULL, mi
     dplyr::select(starts_with("geom")) |>
     dplyr::mutate(dplyr::across(dplyr::everything(), ~ dplyr::if_else(is.na(.x), 0, 1)))
 
+  # I found a bug in tidyr::unite() so this is horrible.
+
+  data_wide_upset_js <- data_wide_upset_js |>
+    dplyr::mutate(interaction = paste0(colnames(data_wide_upset_js), collapse = "_"), .before = 1)
 
   data_wide_upset_js_filtered <- data_wide_upset_js |>
-    tidyr::unite("interaction", dplyr::everything(), remove = FALSE) |>
     dplyr::mutate(interaction_size = dplyr::n(), .by = interaction) |>
     dplyr::filter(interaction_size > min_interaction_size ) |>
     dplyr::select(dplyr::starts_with("geom"))
@@ -47,8 +50,12 @@ make_geom_interactive_venn_diagram <- function(data_geom_usage){
     tidyr::pivot_wider(values_from = geom_name,
                        names_from = geom_name) |>
     dplyr::select(starts_with("geom")) |>
-    dplyr::mutate(dplyr::across(dplyr::everything(), ~ dplyr::if_else(is.na(.x), 0, 1))) |>
-    tidyr::unite("interaction", dplyr::everything(), remove = FALSE)
+    dplyr::mutate(dplyr::across(dplyr::everything(), ~ dplyr::if_else(is.na(.x), 0, 1)))
+
+  # I found a bug in tidyr::unite() so this is horrible.
+
+  data_wide_upset_js <- data_wide_upset_js |>
+    dplyr::mutate(interaction = paste0(colnames(data_wide_upset_js), collapse = "_"), .before = 1)
 
   top_3_occuring_geoms <- data_wide_upset_js |>
     dplyr::summarise(dplyr::across(dplyr::where(is.numeric), ~sum(.x))) |>

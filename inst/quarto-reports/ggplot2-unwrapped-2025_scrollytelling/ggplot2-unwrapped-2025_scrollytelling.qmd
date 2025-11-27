@@ -1,5 +1,6 @@
 ---
 title: "ggplot2 wrapped 2025"
+embed-resources: true
 format:
   closeread-html:
     remove-header-space: true
@@ -20,13 +21,14 @@ params:
   executed_from: "direct_from_file"
   data_path_geom_usage: ""
   data_path_geom_details: ""
+  report_year: 2025
 ---
 
 
 ```{r setup}
 #| echo: false
 #| warning: false
-f# library("ggupset")
+# library("ggupset")
 # library("tidyverse")
 # library("ggplot2wrapped")
 # library("highcharter")
@@ -101,7 +103,7 @@ GOT TO PLOT THEM ALL!
 
 ```{r}
 #| include: false
-number_geoms_in_ggplot2 <- data_geoms |> 
+number_geoms_in_ggplot2 <- ggplot2wrapped::data_geoms |> 
   dplyr::filter(package_name == "ggplot2") |> 
   dplyr::distinct(geom_name) |> 
   nrow()
@@ -298,7 +300,7 @@ data_geom_usage |>
 
 ```{r}
 data_summary_files_per_day <- ggplot2wrapped::summarise_per_day(data_geom_usage, "per_day_files_with_geoms") |> 
-  ggplot2wrapped::fill_geom_usage_date_data() |> 
+  ggplot2wrapped::fill_geom_usage_date_data(target_year = params$report_year) |> 
   dplyr::summarise(total_files = sum(calendar_measure, na.rm = TRUE), .by = month_name)
 
 # TODO: Actually support draws
@@ -317,7 +319,7 @@ These months accounted for `{r} scales::label_percent()(sum(month_most_files[["t
 
 ```{r}
 #| include: false
-number_geoms_in_ggplot2 <- data_geoms |> 
+number_geoms_in_ggplot2 <- ggplot2wrapped::data_geoms |> 
   dplyr::filter(package_name == "ggplot2") |> 
   dplyr::distinct(geom_name) |> 
   nrow()
@@ -332,7 +334,8 @@ number_geoms_used <- data_geom_usage |>
 ```{r}
 #| include: false
 date_most_unique_geoms <- ggplot2wrapped::summarise_per_day(data_geom_usage, "per_day_unique_geoms") |> 
-  dplyr::filter(calendar_measure == max(calendar_measure))
+  dplyr::filter(calendar_measure == max(calendar_measure)) |> 
+  dplyr::pull(modified_date)
 
 vec_geoms_from_most_unique_day <- data_geom_usage |> 
   dplyr::mutate(modified_date = lubridate::as_date(modified_time)) |> 

@@ -12,6 +12,7 @@
 ggplot_wrapped_2025 <- function(data_geom_usage,
                                 data_geom_details = ggplot2wrapped::data_geoms,
                                 report_type = c("scrollytelling"),
+                                report_year = 2025,
                                 export_path = ".",
                                 exported_report_name = "your-ggplot2-wrapped.html",
                                 overwrite = TRUE){
@@ -36,15 +37,15 @@ ggplot_wrapped_2025 <- function(data_geom_usage,
 
   print("JUST HERE")
 
-# quarto::quarto_render(input = system.file("quarto-reports", "ggplot2-unwrapped-2025_scrollytelling","ggplot2-unwrapped-2025_scrollytelling.qmd", package = "ggplot2wrapped"),
-#                       output_file = exported_report_name,
-#                       execute_dir = temp_dir,
-#                       execute_params = list(executed_from = "ggplot_wrapped_2025"))
-
-  quarto::quarto_render(input = system.file("quarto-reports", "ggplot2-unwrapped-2025_scrollytelling","chip-away.qmd", package = "ggplot2wrapped"),
+  # quarto::quarto_render(input = system.file("quarto-reports", "ggplot2-unwrapped-2025_scrollytelling","ggplot2-unwrapped-2025_scrollytelling.qmd", package = "ggplot2wrapped"),
+  #                       output_file = exported_report_name,
+  #                       execute_dir = temp_dir,
+  #                       execute_params = list(executed_from = "ggplot_wrapped_2025"))
+  #
+  quarto::quarto_render(input = system.file("quarto-reports", "ggplot2-unwrapped-2025_scrollytelling","ggplot2-unwrapped-2025_scrollytelling.qmd", package = "ggplot2wrapped"),
                         output_file = exported_report_name,
                         execute_dir = temp_dir,
-                        execute_params = list(executed_from = "ggplot_wrapped_2025"))
+                        execute_params = list(executed_from = "ggplot_wrapped_2025", report_year = report_year))
 
   print("check")
   print(file.exists(exported_report_name))
