@@ -1,0 +1,64 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# ggplot2wrapped
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+The goal of ggplot2wrapped is to ...
+
+## Installation
+
+You'll need this other GitHub only package
+
+``` r
+# remotes::install_github("visibledata/GPCDStools")
+```
+
+```{r}
+library(ggplot2wrapped)
+library(tidyverse)
+```
+
+Use this to collect file information. This is useful to make sure you don't just include EVERYTHING
+
+```{r}
+code_files <- get_code_file_info(c("~/Github/", "~/coding/r-projects-scrapbook/"), file_type = c(".qmd", ".R", ".Rmd"))
+```
+
+The report assumes you are looking at just one year's worth of data and it's 2025 so we filter for files created in 2025. It could also take a long time if you have lots of code files, so feel free to look at a different year.
+
+Note that the value returned from this object contains **sensitive information** in the `function_call` argument.
+
+```{r}
+target_year <- 2025
+data_geom_usage_2025 <- code_files |>
+  add_geom_usage_to_files()
+```
+
+You can build your report using this function!
+
+```{r, eval=FALSE}
+data_geom_usage_2025 %>% 
+  ggplot_wrapped_2025()
+```
+
+Or if that doesn't work there are lots of lovely functions for visualising your data
+
+```{r}
+make_geom_interactive_upset_chart(data_geom_usage_2025, height = 600)
+```
+
