@@ -226,7 +226,7 @@ summarise_per_file <- function(data_geom_usage){
 #' Get file info
 #'
 #' `make_geom_usage_calendar()` provides a formatted tibble containg file info about
-#' your selected code files.
+#' your selected code files. Heavily copied from https://restateinsight.com/posts/general-posts/2024-12-github-contributions-plot/
 #'
 #' @param paths A singular path or a vector of file paths to look in for code
 #' files

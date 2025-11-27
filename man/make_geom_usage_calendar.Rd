@@ -22,5 +22,5 @@ A tibble.
 }
 \description{
 \code{make_geom_usage_calendar()} provides a formatted tibble containg file info about
-your selected code files.
+your selected code files. Heavily copied from https://restateinsight.com/posts/general-posts/2024-12-github-contributions-plot/
 }
