@@ -6,6 +6,9 @@
 
 ## Citation
 
+Source:
+[`DESCRIPTION`](https://github.com/charliejhadley/ggplot2wrapped/blob/main/DESCRIPTION)
+
 Last F (2025). *ggplot2wrapped: What the Package Does (One Line, Title
 Case)*. R package version 0.0.0.9000,
 <https://charliejhadley.github.io/ggplot2wrapped/>.
