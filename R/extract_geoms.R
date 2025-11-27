@@ -1,3 +1,21 @@
+#' add_geom_usage_to_files
+#'
+#' `add_geom_usage_to_files()` is the main function you'll use to add geom usage
+#' data to your files.
+#'
+#' @export
+add_geom_usage_to_files <- function(data_file_info){
+
+  data_file_info |>
+    dplyr::mutate(geom_usage = get_geoms_from_code_file(file_path, data_geoms)) |>
+    tidyr::unnest(geom_usage) |>
+    dplyr::filter(!is.na(geom_name)) |>
+    dplyr::mutate(file_extension = tools::file_ext(file_path), .after = 1)
+
+}
+
+
+
 #' get_geoms_from_code_file
 #'
 #' `get_geoms_from_code_file()` uses `{astgrepr}` to both extract and count geom
@@ -34,7 +52,7 @@ get_geoms_from_code_file <- function(file_path, geoms_dataset){
   # Vectorisation utility function
   get_geoms_from_code_file_singular <- function(file_path){
 
-  code_file <- paste0(readLines(file_path),collapse = "\n")
+  code_file <- paste0(readLines(file_path, warn = FALSE),collapse = "\n")
 
   root <- code_file |>
     astgrepr::tree_new() |>
@@ -65,12 +83,13 @@ get_geoms_from_code_file <- function(file_path, geoms_dataset){
     tibble::enframe(name = "geom_name", value = "geom_function_calls") |>
     tidyr::unnest(geom_function_calls) |>
     tidyr::unnest(geom_function_calls) |>
-    mutate(function_call = extract_geom_arguments(geom_function_calls)) |>
-    mutate(n_args_in_call = map_dbl(function_call, nrow)) |>
-    mutate(has_aes = map_lgl(function_call, ~any(.x[["is_aes"]]))) |>
-    select(-geom_function_calls) |>
+    dplyr::mutate(function_call = extract_geom_arguments(geom_function_calls)) |>
+    dplyr::mutate(length_of_call = stringr::str_length(stringr::str_remove(geom_function_calls, geom_name)) - 2) |>
+    dplyr::mutate(n_args_in_call = map_dbl(function_call, nrow)) |>
+    dplyr::mutate(has_aes = map_lgl(function_call, ~any(.x[["is_aes"]])), .after = geom_name) |>
+    dplyr::select(-geom_function_calls) |>
     dplyr::mutate(n_times_used = dplyr::n(), .by = geom_name) |>
-    dplyr::left_join(geoms_dataset,
+    dplyr::left_join(select(geoms_dataset, geom_name, package_name),
               by = c("geom_name"))
 
   ## Create single row tibble if no geoms found

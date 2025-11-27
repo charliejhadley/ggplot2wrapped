@@ -9,40 +9,53 @@
 #' RMarkdown.
 #' @returns A tibble.
 #' @export
-ggplot_wrapped_2025 <- function(paths, file_type = c(".R", ".qmd", "Rmd"), report_type = c("scrollytelling"),
-                                year_wrapped = 2025,
-                                file_action = "created",
-                                exported_report = "your-ggplot2-wrapped.html"){
-
-  if(all(purrr::map_lgl(c("~/Github", "foo"), file.exists))){
-
-    cli::cli_abort(c(
-      "{.var paths} must all be valid paths, at least one is invalid"
-    ))
-
-  }
-
-  code_files <- get_code_file_info(paths, file_type = c(".qmd", ".R", ".Rmd"))
-
-  if(nrow(code_files) == 0){
-
-    cli::cli_abort(c(
-      "We di"
-    ))
-
-  }
-
-  data_target_year_geoms_raw <- code_files |>
-    dplyr::filter(year(created_time) == year_wrapped) |>
-    dplyr::mutate(geom_usage = get_geoms_from_code_file(file_path, data_geoms))
+ggplot_wrapped_2025 <- function(data_geom_usage,
+                                data_geom_details = ggplot2wrapped::data_geoms,
+                                report_type = c("scrollytelling"),
+                                export_path = ".",
+                                exported_report_name = "your-ggplot2-wrapped.html",
+                                overwrite = TRUE){
 
   temp_dir <- tempfile()
   dir.create(temp_dir, recursive = TRUE)
 
-  save(data_target_year_geoms_raw, file = file.path(temp_dir,"FIND ME.RData"))
+  data_geom_usage <- data_geom_usage
+  data_geom_details <- data_geom_details
 
-  quarto::quarto_render(input = "ggplot2-unwrapped-2025_scrollytelling .qmd",
-                        output_file = "CHARLIE REPORT.html")
+  print(data_geom_details)
+
+  data_geom_usage |>
+    write_csv(file.path(temp_dir, "data_geom_usage.csv"))
+
+  data_geom_details |>
+    write_csv(file.path(temp_dir, "data_geom_details.csv"))
+
+#
+#   save(data_geom_usage, file = file.path(temp_dir,"data_geom_usage.RData"))
+#   save(data_geom_details, file = file.path(temp_dir,"data_geom_details.RData"))
+
+  print("JUST HERE")
+
+# quarto::quarto_render(input = system.file("quarto-reports", "ggplot2-unwrapped-2025_scrollytelling","ggplot2-unwrapped-2025_scrollytelling.qmd", package = "ggplot2wrapped"),
+#                       output_file = exported_report_name,
+#                       execute_dir = temp_dir,
+#                       execute_params = list(executed_from = "ggplot_wrapped_2025"))
+
+  quarto::quarto_render(input = system.file("quarto-reports", "ggplot2-unwrapped-2025_scrollytelling","chip-away.qmd", package = "ggplot2wrapped"),
+                        output_file = exported_report_name,
+                        execute_dir = temp_dir,
+                        execute_params = list(executed_from = "ggplot_wrapped_2025"))
+
+  print("check")
+  print(file.exists(exported_report_name))
+
+  quarto_output_file <- system.file("quarto-reports", "ggplot2-unwrapped-2025_scrollytelling", exported_report_name, package = "ggplot2wrapped")
+
+  # # Now copy it to the desired path and delete the original file
+  # print(file.path(getwd(), exported_report_name))
+  # print(list.files(temp_dir))
+  file.copy(from = quarto_output_file, to = file.path(export_path, exported_report_name), overwrite = overwrite)
+  file.remove(quarto_output_file)
 
   on.exit(unlink(temp_dir), add = TRUE)
 

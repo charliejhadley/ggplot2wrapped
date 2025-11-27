@@ -5,12 +5,12 @@
 \title{Get file info}
 \usage{
 ggplot_wrapped_2025(
-  paths,
-  file_type = c(".R", ".qmd", "Rmd"),
+  data_geom_usage,
+  data_geom_details = ggplot2wrapped::data_geoms,
   report_type = c("scrollytelling"),
-  year_wrapped = 2025,
-  file_action = "created",
-  exported_report = "your-ggplot2-wrapped.html"
+  export_path = ".",
+  exported_report_name = "your-ggplot2-wrapped.html",
+  overwrite = TRUE
 )
 }
 \arguments{
