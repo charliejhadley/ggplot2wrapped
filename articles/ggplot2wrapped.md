@@ -1,3 +1,3 @@
 # ggplot2wrapped Overview
 
-Well, hello!
+Well, hello! Welcome to ggplo2wrapped.
