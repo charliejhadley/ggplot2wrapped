@@ -43,4 +43,4 @@ Remotes: charliejhadley/GPCDStools@main
 VignetteBuilder: 
      knitr, 
      quarto 
-URL: https://charliejhadley.github.io/ggplot2wrapped/
+URL: https://charliejhadley.github.io/ggplot2wrapped/, https://github.com/charliejhadley/ggplot2wrapped
