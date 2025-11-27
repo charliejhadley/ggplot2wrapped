@@ -334,12 +334,11 @@ number_geoms_used <- data_geom_usage |>
 ```{r}
 #| include: false
 date_most_unique_geoms <- ggplot2wrapped::summarise_per_day(data_geom_usage, "per_day_unique_geoms") |> 
-  dplyr::filter(calendar_measure == max(calendar_measure)) |> 
-  dplyr::pull(modified_date)
+  dplyr::filter(calendar_measure == max(calendar_measure))
 
 vec_geoms_from_most_unique_day <- data_geom_usage |> 
   dplyr::mutate(modified_date = lubridate::as_date(modified_time)) |> 
-  dplyr::filter(modified_date == date_most_unique_geoms) |> 
+  dplyr::filter(modified_date == date_most_unique_geoms[["modified_date"]]) |> 
   dplyr::distinct(geom_name) |> 
   dplyr::pull() |> 
   sort()
