@@ -1,0 +1,25 @@
+# Get file info
+
+[`get_code_file_info()`](https://charliejhadley.github.io/ggplot2wrapped/reference/get_code_file_info.md)
+provides a formatted tibble containg file info about your selected code
+files.
+
+## Usage
+
+``` r
+make_aes_type_percentile_highcharts(data_geom_usage)
+```
+
+## Arguments
+
+- paths:
+
+  A singular path or a vector of file paths to look in for code files
+
+- file_types:
+
+  Which R code files to look at. Defaults to R, Quarto and RMarkdown.
+
+## Value
+
+A tibble.
