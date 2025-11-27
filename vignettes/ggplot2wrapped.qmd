@@ -1,0 +1,11 @@
+---
+title: 'ggplot2wrapped Overview'
+date: '`r Sys.Date()`'
+format: html
+vignette: >
+  %\VignetteIndexEntry{Analyse your ggplot2 geom usage}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
+---
+
+Well, hello!
