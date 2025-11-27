@@ -1,5 +1,5 @@
 ---
-title: 'ggplot2wrapped Overview'
+title: 'Your ggplot2wrapped report for 2025!'
 date: '`r Sys.Date()`'
 format: html
 vignette: >
@@ -8,4 +8,6 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-Well, hello! Welcome to ggplo2wrapped.
+Welcome! 2025 is the first year for `{ggplot2wrapped}` and this year your report is provided as a scrollytelling
+
+
