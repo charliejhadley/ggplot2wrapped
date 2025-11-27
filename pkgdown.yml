@@ -3,7 +3,7 @@ pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
   ggplot2wrapped: ggplot2wrapped.html
-last_built: 2025-11-27T23:01Z
+last_built: 2025-11-27T23:07Z
 urls:
   reference: https://charliejhadley.github.io/ggplot2wrapped/reference
   article: https://charliejhadley.github.io/ggplot2wrapped/articles
