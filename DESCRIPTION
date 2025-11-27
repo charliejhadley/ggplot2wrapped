@@ -26,6 +26,7 @@ Imports:
     ggupset,
     GPCDStools,
     highcharter,
+    igraph,
     lubridate,
     magick,
     praise,
@@ -40,3 +41,4 @@ Imports:
 VignetteBuilder: 
      knitr, 
      quarto 
+URL: https://charliejhadley.github.io/ggplot2wrapped/
