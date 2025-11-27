@@ -1,0 +1,126 @@
+---
+title: "ggplot2 wrapped 2025"
+embed-resources: true
+format:
+  closeread-html:
+    remove-header-space: true
+    css: styles.css
+    narrative-font-family: Karla
+    narrative-text-color-sidebar: "#212529"
+    header-includes: |
+      <link rel="stylesheet" media="screen" href="https://fontlibrary.org//face/tex-gyre-adventor" type="text/css"/>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
+      <base target="_blank">
+echo: false
+warning: false
+message: false
+from: markdown+emoji
+params: 
+  executed_from: "direct_from_file"
+  data_path_geom_usage: ""
+  data_path_geom_details: ""
+---
+
+
+```{r setup}
+#| echo: false
+#| warning: false
+# library("ggupset")
+# library("tidyverse")
+# library("ggplot2wrapped")
+# library("highcharter")
+# library("GPCDStools")
+# library("upsetjs")
+# 
+# library("tidyverse")
+# library("patchwork")
+# library("reactable")
+# library("janitor")
+
+if (params$executed_from == "direct_from_file") {
+  load(system.file("quarto-reports", "ggplot2-unwrapped-2025_scrollytelling","data_geom_usage_example.RData", package = "ggplot2wrapped"))
+  
+  data_geom_usage <- data_geom_usage_example
+  
+  data_geom_details <- ggplot2wrapped::data_geoms
+} else {
+  # Because Quarto params can't be tibbles instead we use a temp dir and write
+  # data files into that.
+  # execute_dir = temp_dir is called to hand these files over
+  data_geom_usage <- read.csv("data_geom_usage.csv")
+  data_geom_details <- read.csv("data_geom_details.csv")
+}
+```
+
+```{r}
+print("check internal quarto")
+list.files()
+```
+
+
+# {.page-columns .page-full}
+
+<span style='font-size:5rem;'>ggplot wrapped 2025</span>
+
+### Build your own!
+
+Build your own by following [code](code.html)
+\
+
+::: {.column-screen style="background-image:url(https://mschnetzer.github.io/img/scrollytell/kmh-plan.jpg); background-size: 100vw; height: 250px; background-position: center +0%; background-repeat: no-repeat;"}
+:::
+<figcaption>Plan of [Karl-Marx-Hof](https://en.wikipedia.org/wiki/Karl-Marx-Hof), built between 1927 and 1930 by city planner Karl Ehn. Source: [Vielfalt der Moderne](https://vielfaltdermoderne.de/karl-marx-hof/)</figcaption>
+
+\
+
+<!---- START: geom icon grid ---->
+::::: {style="--cr-narrative-font-size:var(--size-large);--cr-narrative-sidebar-width: 2fr;--cr-section-background-color:white"}
+::::{.cr-section layout="sidebar-right"}
+
+
+::: {#cr-all-geom-icons .medium-fixed-text}
+```{r all-geom-icons}
+#| fig-width: 8
+#| fig-height: 12
+ggplot2wrapped::make_geom_icon_usage_grid(data_geom_usage, show_which_geoms = "all")
+```
+:::
+
+::: {#cr-used-geom-icons .medium-fixed-text}
+```{r used-geom-icons}
+#| fig-width: 8
+#| fig-height: 12
+ggplot2wrapped::make_geom_icon_usage_grid(data_geom_usage, show_which_geoms = "used")
+```
+:::
+
+@cr-all-geom-icons
+
+GOT TO PLOT THEM ALL!
+
+```{r}
+#| include: false
+number_geoms_in_ggplot2 <- data_geoms |> 
+  dplyr::filter(package_name == "ggplot2") |> 
+  dplyr::distinct(geom_name) |> 
+  nrow()
+
+number_geoms_used <- data_geom_usage |> 
+  dplyr::distinct(geom_name) |> 
+  nrow()
+```
+
+@cr-used-geom-icons
+
+You used `{r} number_geoms_used` out of `{r} number_geoms_in_ggplot2` geoms from {ggplot2}!
+<br>
+<br>
+`{r} praise::praise("${Exclamation}!")` That's over `{r} scales::label_percent()(number_geoms_used / number_geoms_in_ggplot2)`!
+<br>
+Let's look at your top used geoms!
+::::
+
+:::::
+<!---- END: geom icon grid ---->

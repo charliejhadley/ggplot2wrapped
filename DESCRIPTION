@@ -21,11 +21,22 @@ Imports:
     astgrepr,
     cli,
     dplyr,
+    forcats,
+    ggimage,
+    ggupset,
+    GPCDStools,
+    highcharter,
+    lubridate,
+    magick,
+    praise,
     purrr,
     quarto,
+    rlang,
+    scales,
     stringr,
     tibble,
-    tidyr
+    tidyr,
+    upsetjs
 VignetteBuilder: 
      knitr, 
      quarto 

@@ -48,4 +48,10 @@ data_geoms_detailed <- data_geoms_basic |>
 
 data_geoms <- data_geoms_detailed
 
+data_geoms |>
+  filter(package_name == "ggplot2") |>
+  arrange(geom_name) |>
+  select(geom_name) |>
+  write_csv("data-raw/geom_groupings.csv")
+
 usethis::use_data(data_geoms, overwrite = TRUE)

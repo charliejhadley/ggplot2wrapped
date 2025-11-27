@@ -6,52 +6,634 @@ format:
     css: styles.css
     narrative-font-family: Karla
     narrative-text-color-sidebar: "#212529"
+    header-includes: |
+      <link rel="stylesheet" media="screen" href="https://fontlibrary.org//face/tex-gyre-adventor" type="text/css"/>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
+      <base target="_blank">
 echo: false
 warning: false
 message: false
 from: markdown+emoji
 params: 
   executed_from: "direct_from_file"
+  data_path_geom_usage: ""
+  data_path_geom_details: ""
 ---
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
-knitr::opts_chunk$set(
-  dev = "ragg_png",
-  eval = TRUE,
-  echo = FALSE,
-  message = FALSE,
-  warning = FALSE
-)
 
-library("tidyverse")
+```{r setup}
+#| echo: false
+#| warning: false
+f# library("ggupset")
+# library("tidyverse")
+# library("ggplot2wrapped")
+# library("highcharter")
+# library("GPCDStools")
+# library("upsetjs")
+# 
+# library("tidyverse")
+# library("patchwork")
+# library("reactable")
+# library("janitor")
 
 if (params$executed_from == "direct_from_file") {
-  load(here::here("inst/quarto-reports/ggplot2-unwrapped-2025_scrollytelling/data_test_scrollytelling.RData"))
-  quarto_scrollytellling_geom_data <- data_test_scrollytelling
+  load(system.file("quarto-reports", "ggplot2-unwrapped-2025_scrollytelling","data_geom_usage_example.RData", package = "ggplot2wrapped"))
+  
+  data_geom_usage <- data_geom_usage_example
+  
+  data_geom_details <- ggplot2wrapped::data_geoms
 } else {
-  # Because Quarto params can't be tibbles instead we use temp .RData
-  load("quarto_scrollytellling_geom_data.RData")
+  # Because Quarto params can't be tibbles instead we use a temp dir and write
+  # data files into that.
+  # execute_dir = temp_dir is called to hand these files over
+  data_geom_usage <- read.csv("data_geom_usage.csv")
+  data_geom_details <- read.csv("data_geom_details.csv")
 }
-
 ```
 
-:::{.cr-section}
-
 ```{r}
-params$executed_from
+print("check internal quarto")
+list.files()
 ```
 
 
-Draw your readers attention with focus effects. @cr-features
+# {.page-columns .page-full}
 
-:::{#cr-features}
+<span style='font-size:5rem;'>ggplot wrapped 2025</span>
+
+### Build your own!
+
+Build your own by following [code](code.html)
+\
+
+::: {.column-screen style="background-image:url(https://mschnetzer.github.io/img/scrollytell/kmh-plan.jpg); background-size: 100vw; height: 250px; background-position: center +0%; background-repeat: no-repeat;"}
+:::
+<figcaption>Plan of [Karl-Marx-Hof](https://en.wikipedia.org/wiki/Karl-Marx-Hof), built between 1927 and 1930 by city planner Karl Ehn. Source: [Vielfalt der Moderne](https://vielfaltdermoderne.de/karl-marx-hof/)</figcaption>
+
+\
+
+<!---- START: geom icon grid ---->
+::::: {style="--cr-narrative-font-size:var(--size-large);--cr-narrative-sidebar-width: 2fr;--cr-section-background-color:white"}
+::::{.cr-section layout="sidebar-right"}
+
+
+::: {#cr-all-geom-icons .medium-fixed-text}
+```{r all-geom-icons}
+#| fig-width: 8
+#| fig-height: 12
+ggplot2wrapped::make_geom_icon_usage_grid(data_geom_usage, show_which_geoms = "all")
+```
+:::
+
+::: {#cr-used-geom-icons .medium-fixed-text}
+```{r used-geom-icons}
+#| fig-width: 8
+#| fig-height: 12
+ggplot2wrapped::make_geom_icon_usage_grid(data_geom_usage, show_which_geoms = "used")
+```
+:::
+
+@cr-all-geom-icons
+
+GOT TO PLOT THEM ALL!
+
 ```{r}
-quarto_scrollytellling_geom_data |> 
-  unnest(geom_usage) |> 
-  filter(n_times_used > 0) |> 
-  count(geom_name)
+#| include: false
+number_geoms_in_ggplot2 <- data_geoms |> 
+  dplyr::filter(package_name == "ggplot2") |> 
+  dplyr::distinct(geom_name) |> 
+  nrow()
+
+number_geoms_used <- data_geom_usage |> 
+  dplyr::distinct(geom_name) |> 
+  nrow()
+```
+
+@cr-used-geom-icons
+
+You used `{r} number_geoms_used` out of `{r} number_geoms_in_ggplot2` geoms from {ggplot2}!
+<br>
+<br>
+`{r} praise::praise("${Exclamation}!")` That's over `{r} scales::label_percent()(number_geoms_used / number_geoms_in_ggplot2)`!
+<br>
+Let's look at your top used geoms!
+::::
+
+:::::
+<!---- END: geom icon grid ---->
+
+```{r}
+data_summary_geom_calls <- data_geom_usage |> 
+  dplyr::filter(package_name == "ggplot2") |> 
+  dplyr::group_by(geom_name) |> 
+  dplyr::summarise(used_in_n_files = dplyr::n(),
+            total_times_used = sum(n_times_used),
+            avg_args_used = mean(n_args_in_call),
+            max_args_used = max(n_args_in_call),
+            times_used_with_aes = sum(ifelse(has_aes, 1, 0)),
+            times_used_without_aes = sum(ifelse(!has_aes, 1, 0)))
+```
+
+# {.page-columns .page-full}
+
+```{r}
+data_total_times_used <- data_summary_geom_calls |> 
+  dplyr::slice_max(total_times_used,
+            n = 4)
+
+data_total_times_used_top_n <- data_summary_geom_calls |> 
+  dplyr::arrange(dplyr::desc(total_times_used)) |> 
+  dplyr::mutate(geom_name = dplyr::if_else(dplyr::row_number() <= 4, geom_name, "All other geoms")) |> 
+  dplyr::summarise(total_times_used = sum(total_times_used), .by = geom_name) |> 
+  dplyr::mutate(geom_name = forcats::fct_reorder(geom_name, total_times_used),
+         geom_name = forcats::fct_rev(geom_name),
+         geom_name = forcats::fct_relevel(geom_name, "All other geoms", after = Inf)) |> 
+  dplyr::mutate(order_id = as.integer(geom_name)) |> 
+  dplyr::arrange(order_id)
+
+data_used_across_files_top_n <- data_summary_geom_calls |> 
+  dplyr::arrange(dplyr::desc(used_in_n_files)) |>
+  dplyr::mutate(geom_name = dplyr::if_else(dplyr::row_number() <= 4, geom_name, "All other geoms")) |> 
+  dplyr::summarise(used_in_n_files = sum(used_in_n_files), .by = geom_name) |> 
+  dplyr::mutate(geom_name = forcats::fct_reorder(geom_name, used_in_n_files),
+         geom_name = forcats::fct_rev(geom_name),
+         geom_name = forcats::fct_relevel(geom_name, "All other geoms", after = Inf)) |> 
+  dplyr::mutate(order_id = as.integer(geom_name)) |> 
+  dplyr::arrange(order_id)
+
+most_used_geom_total_usage <- data_total_times_used_top_n |> 
+  dplyr::filter(geom_name != "All other geoms") |> 
+  dplyr::filter(total_times_used == max(total_times_used)) |> 
+  dplyr::pull(geom_name)
+
+most_used_geom_across_files <- data_used_across_files_top_n |> 
+  dplyr::filter(geom_name != "All other geoms") |> 
+  dplyr::filter(used_in_n_files == max(used_in_n_files)) |> 
+  dplyr::pull(geom_name)
+
+text_usage_vs_files <- dplyr::if_else(most_used_geom_across_files == most_used_geom_total_usage,
+                               paste("No surprises but your most used geom was also the geom that appeared in the most distinct files"),
+                               paste(praise::praise("${Exclamation}!"), "That is surprising! Your most used geom <b>was not</b> the same geom that appear in the most distinct files!"))
+```
+
+## Shout out to `{r} most_used_geom_total_usage` - your most used geom in 2025!
+
+`{r} praise::praise("${Exclamation}!")` There are so many different ways to look at how your geoms were used across your `{r} praise::praise("${adjective}")` data visualisations. Maybe the easiest way is a **part-to-whole** story? 
+
+Looking at your *top 4 geoms* and lumping everything else together...
+
+::: {.column-page}
+```{r}
+#| fig-width: 6
+#| fig.height: 6
+
+vec_colours_pie <- GPCDStools::colours_gpcds |> 
+  dplyr::filter(type == "tertiary_lighter") |> 
+  dplyr::slice(1:4) |> 
+  dplyr::pull(hex_code) |> 
+  c(GPCDStools::cols_gpcds$grey_mid)
+
+highcharter::highchart() |> 
+  highcharter::hc_add_series(
+    data_total_times_used_top_n, 
+    "pie",
+    highcharter::hcaes(
+      x = geom_name,
+      y = total_times_used
+      ),
+    center = c(50, 50), 
+                innerSize="50%",
+                dataLabels = list(distance = 18,
+                                  format = '<b>{point.name}</b>:<br>Used {point.y} times<br>({point.percentage:.0f} %)',
+                                  style = list(fontSize = 16))) |> 
+  highcharter::hc_colors(vec_colours_pie) |> 
+  highcharter::hc_plotOptions(
+    innersize="50%", 
+    startAngle=90, 
+    endAngle=90,
+    center=list('50%', '75%'),
+    size='110%'
+    # width = "300px"
+    ) |> 
+  highcharter::hc_title(text = 'Total times<br>geom used',
+        verticalAlign = 'middle', 
+        align = 'center', 
+        style = list(fontSize = 24),
+        y = 0, 
+        floating = TRUE
+        )
+```
+:::
+
+<br/>
+
+> `{r} text_usage_vs_files`
+
+<br/>
+
+::: {.column-page}
+```{r}
+#| fig-width: 6
+#| fig.height: 6
+
+
+highcharter::highchart() |> 
+  highcharter::hc_add_series(
+    data_used_across_files_top_n, 
+    "pie",
+    highcharter::hcaes(
+      x = geom_name,
+      y = used_in_n_files
+      ),
+    center = c(50, 50), 
+                innerSize="50%",
+                dataLabels = list(distance = 18,
+                                  format = '<b>{point.name}</b>:<br>Used in {point.y} files<br>({point.percentage:.0f} %)',
+                                  style = list(fontSize = 16))) |> 
+  highcharter::hc_colors(vec_colours_pie) |> 
+  highcharter::hc_plotOptions(
+    innersize="50%", 
+    startAngle=90, 
+    endAngle=90,
+    center=list('50%', '75%'),
+    size='110%'
+    # width = "300px"
+    ) |> 
+  highcharter::hc_title(text = '# of files geom<br>occured in',
+        verticalAlign = 'middle', 
+        align = 'center', 
+        style = list(fontSize = 24),
+        y = 0, 
+        floating = TRUE
+        )
+```
+:::
+
+<!---- START: calendars ---->
+::::: {style="--cr-narrative-font-size:var(--size-large);--cr-narrative-sidebar-width: 2fr;--cr-section-background-color:white"}
+::::{.cr-section layout="sidebar-left"}
+
+::: {#cr-calendar-files-with-geoms}
+```{r calendar-files-with-geoms}
+#| fig-width: 14
+#| fig-height: 8
+data_geom_usage |> 
+  ggplot2wrapped::make_geom_usage_calendar(measure = "per_day_files_with_geoms")
 ```
 
 :::
 
+::: {#cr-calendar-unique-geoms}
+```{r calendar-unique-geom}
+#| fig-width: 14
+#| fig-height: 8
+data_geom_usage |> 
+  ggplot2wrapped::make_geom_usage_calendar(measure = "per_day_unique_geoms")
+```
 :::
+
+@cr-calendar-files-with-geoms
+
+```{r}
+data_summary_files_per_day <- ggplot2wrapped::summarise_per_day(data_geom_usage, "per_day_files_with_geoms") |> 
+  ggplot2wrapped::fill_geom_usage_date_data() |> 
+  dplyr::summarise(total_files = sum(calendar_measure, na.rm = TRUE), .by = month_name)
+
+# TODO: Actually support draws
+month_most_files <- data_summary_files_per_day |> 
+  dplyr::filter(total_files == max(total_files))
+```
+
+
+What a chart full year!
+<br>
+In total `{r} sum(data_summary_files_per_day$total_files)` files were created that contained geoms!
+
+Your busiest month(s) were `{r} month_most_files[["month_name"]]`.
+<br>
+These months accounted for `{r} scales::label_percent()(sum(month_most_files[["total_files"]]) / sum(data_summary_files_per_day$total_files))` of your files with geoms!
+
+```{r}
+#| include: false
+number_geoms_in_ggplot2 <- data_geoms |> 
+  dplyr::filter(package_name == "ggplot2") |> 
+  dplyr::distinct(geom_name) |> 
+  nrow()
+
+number_geoms_used <- data_geom_usage |> 
+  dplyr::distinct(geom_name) |> 
+  nrow()
+```
+
+@cr-calendar-unique-geoms
+
+```{r}
+#| include: false
+date_most_unique_geoms <- ggplot2wrapped::summarise_per_day(data_geom_usage, "per_day_unique_geoms") |> 
+  dplyr::filter(calendar_measure == max(calendar_measure))
+
+vec_geoms_from_most_unique_day <- data_geom_usage |> 
+  dplyr::mutate(modified_date = lubridate::as_date(modified_time)) |> 
+  dplyr::filter(modified_date == date_most_unique_geoms) |> 
+  dplyr::distinct(geom_name) |> 
+  dplyr::pull() |> 
+  sort()
+```
+
+Things look a lot different thinking about geom diversity!
+<br>
+You got your ggplot2 thesaurus out on `{r} date_most_unique_geoms[["modified_date"]]`, using `{r} date_most_unique_geoms[["calendar_measure"]]` unique geoms!
+<br>
+`{r} stringr::str_wrap(vec_geoms_from_most_unique_day)`
+::::
+
+:::::
+
+::::: {style="--cr-narrative-font-size:var(--size-large);--cr-narrative-sidebar-width: 0.5fr;--cr-section-background-color:white"}
+::::{.cr-section layout="sidebar-left"}
+
+::: {#cr-calendar-top-5-geoms}
+
+```{r}
+#| fig-width: 14
+#| fig-height: 8
+data_geom_usage |> 
+  ggplot2wrapped::make_geom_usage_calendar(measure = "per_day_individual_geom_usage")
+```
+
+:::
+
+@cr-calendar-top-5-geoms
+
+::::
+
+:::::
+
+::::{.cr-section layout="sidebar-right"}
+
+::: {#cr-thats-a-complicated-question}
+<h2>Which geoms did you use together most often?</h2>
+:::
+
+@cr-thats-a-complicated-question
+
+Well, that's complicated! Let's get into it!
+
+::::
+
+# {.page-columns .page-full}
+
+This *Venn Diagram* shows your top 3 most used geoms and how often you used them in the same code files
+
+```{r}
+data_geom_usage |> 
+  ggplot2wrapped::make_geom_interactive_venn_diagram()
+```
+
+That's kind of interesting! 
+
+But wait! You used an **`{r} praise::praise("${adjective}")` `{r} number_geoms_used` unique geoms** - a Venn Diagram of that size would be a mess!
+
+That's because we're not really making a straigh forward plot or chart - we're visualising a graph! In graphs we are interested in the relationships and connections between *things*. You might be familiar with hairball-looking graph visualisations - which are just as difficult to extract meaning from as a Venn Diagram.
+
+So, let's use an **UpSet Chart** to look at your most inter-connected geoms in 2025
+
+> **Please** move your cursor over the chart below - it's very interactive.
+
+::: {.column-page}
+```{r}
+data_geom_usage |> 
+  ggplot2wrapped::make_geom_interactive_upset_chart(height = 600)
+```
+:::
+<br/>
+
+> We've thrown away some of your data to make this readable. 
+> Geoms only appear if they occur more than 10 times in your data and an interaction has to occur more than onc
+
+### Oh, wow! Tell me more about UpSet Charts
+
+It's more than likely you've not seen many (or any!) UpSet Charts before. They were only invented in 2012, and the authors quite rightly ask for the original paper to be cited whenever they're used.
+
+> Alexander Lex, Nils Gehlenborg, Hendrik Strobelt, Romain Vuillemot, Hanspeter Pfister. UpSet: Visualization of Intersecting Sets IEEE Transactions on Visualization and Computer Graphics (InfoVis), 20(12): 1983--1992, doi:10.1109/TVCG.2014.2346248, 2014.
+
+<span>On to more fun things!</span>
+
+<!--- AES --->
+
+::::: {style="--cr-narrative-font-size:var(--size-large);--cr-narrative-sidebar-width: 2fr;--cr-section-background-color:white"}
+::::{.cr-section layout="sidebar-left"}
+
+::: {#cr-aes-explanation}
+```{r}
+#| eval: false
+#| echo: true
+# dataviz-level aesthetic
+your_data |> 
+  ggplot() +
+  aes(x = independent_variable,
+      y = dependent_variable) +
+  geom_point()
+
+# geom-specific aes
+your_data |> 
+  ggplot() +
+  geom_point(aes(x = independent_variable,
+      y = dependent_variable))
+```
+:::
+
+::: {#cr-aes-type-by-package}
+```{r}
+
+data_aes_by_package <- data_geom_usage |> 
+  dplyr::mutate(aes_type = dplyr::if_else(has_aes == TRUE, "Geom-specific aes()", "Dataviz-level aes()")) |> 
+  dplyr::summarise(n_aes_uses = sum(n_times_used), .by = c(geom_name, package_name, aes_type)) |> 
+  dplyr::summarise(n_uses = sum(n_aes_uses), .by = c(aes_type, package_name)) |> 
+  dplyr::mutate(label = paste0(aes_type, "<br/> With geoms from ", package_name))
+
+vec_aes_type <- data_aes_by_package |> 
+  dplyr::summarise(n_use = sum(n_uses), .by = aes_type) |> 
+  tibble::deframe()
+
+data_aes_by_package |> 
+  highcharter::hchart(
+    "treemap",
+    highcharter::hcaes(x = label, value = n_uses, color = n_uses),
+    dataLabels = list(style = list(fontSize = 18))
+  )
+  
+```
+:::
+
+@cr-aes-explanation
+
+How can we talk about {ggplot2} without mentioning aesthetics?
+<br/>
+All `{r} scales::label_number(big.mark = ",")(sum(data_geom_usage$n_times_used))` times you used a geom they did their magic with either dataviz-level or geom-specific aes
+
+@cr-aes-type-by-package
+
+Across all your geoms in 2025, `{r} scales::label_percent()(vec_aes_type[["Dataviz-level aes()"]] / sum(vec_aes_type))` of the time you provided dataviz-level aesthetics.
+
+Ohhh... but that chart mentions different packages?
+<br>
+The 2025 edition of the {ggplot2wrapped} report doesn't focus on comparing package usage. But if you take a look at our [documentation](link) you can analyse that data yourself 
+
+::::
+:::::
+
+::::: {style="--cr-narrative-font-size:var(--size-large);--cr-section-background-color:white"}
+::::{.cr-section layout="overlay-left"}
+
+::: {#cr-aes-percentile style='width:80%;'}
+```{r}
+data_geom_usage |> 
+  ggplot2wrapped::make_aes_type_percentile_highcharts()
+```
+:::
+
+Such fussy geoms! @cr-aes-percentile 
+
+Or such strong dataviz-level aesthetics!
+
+::::
+
+:::::
+
+::::{.cr-section layout="sidebar-right"}
+
+::: {#cr-look-at-arguments}
+<h2>Let's wrap up looking at the arguments!</h2>
+:::
+
+@cr-look-at-arguments
+
+This might be the last pun?
+
+::::
+
+```{r}
+number_zero_args_in_call <- data_geom_usage |> 
+  dplyr::filter(n_args_in_call == 0) |> 
+  nrow()
+```
+
+Just like all your data visualisations are different, your geom calls varied a lot!
+
+::: {#cr-column-range style='width:100%;'}
+```{r}
+data_geom_arg_column_range <- data_geom_usage |> 
+  dplyr::filter(n_args_in_call > 0) |> 
+  dplyr::summarise(min_args = min(n_args_in_call), max_args = max(n_args_in_call), mean_args = mean(n_args_in_call), .by = geom_name) |> 
+  dplyr::filter(max_args != min_args) |> 
+  dplyr::mutate(diff = max_args - min_args,
+                geom_name = forcats::fct_reorder(geom_name, diff)) |> 
+  dplyr::arrange(desc(diff))
+  
+
+data_geom_arg_points_for_range <- data_geom_arg_column_range |> 
+  tidyr::pivot_longer(contains("_args"),
+                      values_to = "n_args",
+                      names_to = "arg_measure") |> 
+  dplyr::mutate(arg_measure = stringr::str_to_sentence(stringr::str_replace(arg_measure, "[_]args", " number arguments")))
+
+
+data_geom_arg_column_range |> 
+  highcharter::hchart(
+    type = "columnrange",
+    highcharter::hcaes(x = geom_name, y = mean_args, low = min_args, high = max_args),
+    # remove from legend
+    showInLegend = FALSE
+  ) |> 
+  highcharter::hc_add_series(
+    data = data_geom_arg_points_for_range,
+    "scatter",
+    highcharter::hcaes(x = geom_name, y = n_args, group = arg_measure)
+  ) |> 
+  highcharter::hc_plotOptions(
+    # adjust appearance of column ranges
+    columnrange = list(
+      # make it look narrower
+      maxPointWidth = 6,
+      # make it black
+      color = "black"
+    ),
+    scatter = list(
+      # remove the linewidth so there is no linewidth
+      lineWidth = 0,
+      # adjust the points
+      marker = list(
+        # make the size of the circles bigger
+        radius = 5
+      ),
+      showInLegend = TRUE
+    ),
+    series = list(animation = FALSE,
+                  states = list(inactive = list(opacity = 1)))
+  ) |>
+  highcharter::hc_xAxis(title = list(text = ""),
+                        labels = list(style = list(fontSize = 18))) |> 
+  highcharter::hc_yAxis(title = list(text = "Number of arguments",
+                                     style = list(fontSize = 18)),
+                        labels = list(style = list(fontSize = 18))) |> 
+  highcharter::hc_chart(
+    inverted = TRUE
+  ) |> 
+  highcharter::hc_legend(reversed = TRUE)
+```
+:::
+
+You might have noticed that's not all your geoms :eyes:
+
+That's because `{r} scales::label_percent()(number_zero_args_in_call / nrow(data_geom_usage))` of the time you used geoms with zero arguments!
+
+### We're coming to the end of the report...
+
+Here are some final statistics:
+
+```{r}
+list_longest_geom_call <- data_geom_usage |>
+  dplyr::filter(length_of_call == max(length_of_call)) |> 
+  dplyr::select(geom_name, package_name, length_of_call) |> 
+  as.list()
+
+list_most_arguments_geom_call <- data_geom_usage |> 
+  dplyr::filter(n_args_in_call == max(n_args_in_call)) |> 
+  dplyr::select(geom_name, package_name, n_args_in_call, length_of_call) |> 
+  as.list()
+
+label_compare_longest_most_args <- dplyr::if_else(list_longest_geom_call$geom_name == list_most_arguments_geom_call$geom_name,
+                                           paste(praise::praise("${EXCLAMATION}!"), "That's the <b>same geom</b> with", list_most_arguments_geom_call$n_args_in_call, "arguments"),
+                                           paste0("Your geom with the most geoms was different! It was ", list_most_arguments_geom_call$geom_name, " with a total of <b>", list_most_arguments_geom_call$n_args_in_call, " arguments</b>."))
+```
+
+- Your longest single geom call was a **`{r} praise::praise("${adjective}")` total of `{r} scales::label_number(big.mark = ",")(list_longest_geom_call$length_of_call)` characters long**. It was `{r} list_longest_geom_call$geom_name` from the `{r} list_longest_geom_call$package_name`.
+
+- `{r} label_compare_longest_most_args`
+
+There's a lot more you can do with the [package](link) but we'll sign off with what you were probably expecting and we'd hate to let you down:
+
+```{r}
+data_geom_usage |> 
+  dplyr::count(geom_name) |> 
+  highcharter::hchart("wordcloud", highcharter::hcaes(name = geom_name, weight = log(n))) |> 
+  highcharter::hc_title(text = "Number of code files in 2025 using each geom",
+                        style = list(fontSize = 28))
+```
+
+```{r}
+data_geom_usage |> 
+  dplyr::summarise(n = sum(n_times_used), .by = geom_name) |> 
+  highcharter::hchart("wordcloud", highcharter::hcaes(name = geom_name, weight = log(n))) |> 
+  highcharter::hc_title(text = "Number of times each geom appeared in files from 2025",
+                        style = list(fontSize = 28))
+```
+
+
+
+
+
+
