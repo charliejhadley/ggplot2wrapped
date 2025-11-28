@@ -4,6 +4,8 @@
 
 - [`add_geom_usage_to_files()`](https://charliejhadley.github.io/ggplot2wrapped/reference/add_geom_usage_to_files.md)
   : add_geom_usage_to_files
+- [`data_example_geom_usage`](https://charliejhadley.github.io/ggplot2wrapped/reference/data_example_geom_usage.md)
+  : Core geoms dataset
 - [`data_geoms`](https://charliejhadley.github.io/ggplot2wrapped/reference/data_geoms.md)
   : Core geoms dataset
 - [`extract_geom_arguments()`](https://charliejhadley.github.io/ggplot2wrapped/reference/extract_geom_arguments.md)

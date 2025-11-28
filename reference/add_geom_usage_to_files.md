@@ -6,5 +6,8 @@ usage data to your files.
 ## Usage
 
 ``` r
-add_geom_usage_to_files(data_file_info)
+add_geom_usage_to_files(
+  data_file_info,
+  data_geoms = ggplot2wrapped::data_geoms
+)
 ```
