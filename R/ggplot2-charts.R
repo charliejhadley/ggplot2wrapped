@@ -30,7 +30,7 @@ make_geom_icon_usage_grid <- function(data_geom_usage, show_which_geoms = c("use
 
 
   transparent <- function(img) {
-    magick::image_fx(img, expression = "0.18*a", channel = "alpha") # Sets alpha to 50%
+    magick::image_fx(img, expression = "0.09*a", channel = "alpha") # Sets alpha to 50%
   }
 
   if(show_which_geoms == "used"){
@@ -252,7 +252,8 @@ make_geom_usage_calendar <- function(data_geom_usage, measure = c("per_day_indiv
   title_text <- switch (measure,
                                   "per_day_files_with_geoms" = "Number of files with geoms created per day",
                                   "per_day_unique_geoms" = "Unique geoms used per day",
-                                  "per_day_total_geom_usage" = "Total number of geoms created per day"
+                                  "per_day_total_geom_usage" = "Total number of geoms created per day",
+                        "per_day_individual_geom_usage" = "Per day usage for your top 5 geoms"
   )
 
   if(measure == "per_day_individual_geom_usage"){
@@ -299,7 +300,7 @@ make_geom_usage_calendar <- function(data_geom_usage, measure = c("per_day_indiv
       ggplot2::labs(x = NULL, y = NULL,
                     title = title_text) +
       ggplot2::guides(fill = "none") +
-      ggplot2::theme_minimal(base_size = 22) +
+      ggplot2::theme_minimal(base_size = 22, paper = GPCDStools::cols_gpcds$neutral) +
       ggplot2::theme(
         panel.grid = ggplot2::element_blank(),
         text = ggplot2::element_text(color = "gray10"),
@@ -341,7 +342,7 @@ make_geom_usage_calendar <- function(data_geom_usage, measure = c("per_day_indiv
       ggplot2::labs(x = NULL, y = NULL,
                     title = title_text) +
       ggplot2::guides(fill = "none") +
-      ggplot2::theme_minimal(base_size = 22) +
+      ggplot2::theme_minimal(base_size = 22, paper = GPCDStools::cols_gpcds$neutral) +
       ggplot2::theme(
         panel.grid = ggplot2::element_blank(),
         text = ggplot2::element_text(color = "gray10"),

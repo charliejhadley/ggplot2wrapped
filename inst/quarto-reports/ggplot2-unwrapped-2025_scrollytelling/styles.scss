@@ -1,0 +1,130 @@
+/*-- scss:defaults --*/
+
+$font-family-sans-serif: Karla;
+$footer-height: 100px;
+$font-size-root: 20px;
+
+$brand-brand-blue: #3172AD;
+$brand-rag-green: #06402B;
+$brand-rag-red: #B33134;
+$brand-graph-primary: #30CED1;
+$brand-graph-tertiary-darker: #105052;
+$brand-graph-tertiary-lighter: #1E8F91;
+$brand-graph-tertiary: #1B8385;
+$brand-graph-secondary: #D13BA4;
+$brand-plot-primary: #E0BE36;
+$brand-plot-tertiary-darker: #615216;
+$brand-plot-tertiary-lighter: #A18826;
+$brand-plot-tertiary: #947A14;
+$brand-plot-secondary: #4CE0D0;
+$brand-chart-primary: #FA8A5B;
+$brand-chart-tertiary-darker: #80452E;
+$brand-chart-tertiary-lighter: #C06845;
+$brand-chart-tertiary: #B3542F;
+$brand-chart-secondary: #A7FF75;
+$brand-story-primary: #EB526F;
+$brand-story-tertiary-darker: #6B2332;
+$brand-story-tertiary-lighter: #AA3D4F;
+$brand-story-tertiary: #9E283D;
+$brand-story-secondary: #EBE46A;
+$brand-other-primary: #D8F794;
+$brand-other-tertiary-darker: #697847;
+$brand-other-tertiary-lighter: #A1B86D;
+$brand-other-tertiary: #90AB55;
+$brand-other-secondary: #AEC6F8;
+$brand-grey-dark: #656370;
+$brand-grey-mid: #BBBBBD;
+$brand-grey-light: #DCDCDE;
+$brand-ux-blue-mid: #4464AD;
+$brand-ux-blue-dark: #2A3E6E;
+$brand-ux-blue-light: #6B8EF3;
+$brand-black-mid: #4F4F4F;
+$brand-black-dark: #3B3B3B;
+$brand-neutral: #F9F7F1;
+
+/*-- scss:rules --*/
+
+
+
+body {
+  background-color: #F9F7F1;
+}
+
+.report-title {
+  font-size: clamp(42px, 5vw, 124px);
+  font-family:Futura;
+  padding-left: 20px;
+  color: #EB526F !important;
+}
+
+
+.large-fixed-text-left {
+  font-size:var(--size-large);
+  font-family:Karla;
+  padding-left:50px;
+  font-weight: 800;
+  color: var(--col-text);
+}
+
+
+p {
+  color: var(--col-text);
+}
+
+.medium-fixed-text {
+  font-size:var(--size-medium);
+  font-family:Futura;
+  padding-right:50px;
+  color: var(--col-text);
+}
+
+.large-fixed-text {
+  font-size:var(--size-large);
+  font-family:Futura;
+  padding-left: 20px;
+  color: #F9F7F1 !important;
+}
+
+.medium-fixed-text p{
+  margin-bottom: 100px;
+}
+
+/*
+.sticky-col-stack {
+    container-name: sticks;
+    container-type: size;
+  }
+
+
+.sticky-col-stack video {
+    width: 100cqw !important;
+    height: 100cqh !important;
+  }
+*/
+
+:root {
+  --bs-body-bg: #F9F7F1; /* Example custom color */
+  --size-large: clamp(32px, 4vw, 92px);
+  --size-medium: clamp(24px, 2.5vw, 69px);
+  --size-normal: clamp(18px, 2vw, 52px);
+  --bs-root-font-size: 20px;
+  --col-text:#212529;
+  --col-religion: #819ECE;
+  --col-volunteer: #3C886E;
+  --col-phone: #C28AF3;
+  --col-misc: #E1937B;
+  --col-sleeping: #DDD346;
+  --col-personal-care: #4288F1;
+  --col-eat: #6EBA38;
+  --col-edu: #EF8632;
+  --col-work: #CA42A0;
+  --col-housework: #5DCAF3;
+  --col-household-care: #D44A62;
+  --col-nonhouse-care: #86594C;
+  --col-shopping: #6EAB8A;
+  --col-pro-care: #9D79C3;
+  --col-leisure: #6175E4;
+  --col-sports: #D879BF;
+  --col-travel: #BBBBBB;
+
+}

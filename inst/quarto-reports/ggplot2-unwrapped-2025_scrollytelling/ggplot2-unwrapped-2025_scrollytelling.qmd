@@ -4,15 +4,10 @@ embed-resources: true
 format:
   closeread-html:
     remove-header-space: true
-    css: styles.css
+    css: styles.scss
     narrative-font-family: Karla
-    narrative-text-color-sidebar: "#212529"
-    header-includes: |
-      <link rel="stylesheet" media="screen" href="https://fontlibrary.org//face/tex-gyre-adventor" type="text/css"/>
-      <link rel="preconnect" href="https://fonts.googleapis.com">
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-      <link href="https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
-      <base target="_blank">
+    narrative-text-color-sidebar: "#F9F7F1"
+    section-background-color: red;
 echo: false
 warning: false
 message: false
@@ -55,29 +50,36 @@ if (params$executed_from == "direct_from_file") {
 }
 ```
 
-```{r}
-print("check internal quarto")
-list.files()
-```
+# {.page-columns .page-full} 
 
+<span class="report-title">Your year in {ggplot2}!</span>
 
-# {.page-columns .page-full}
+::: {.grid} 
 
-<span style='font-size:5rem;'>ggplot wrapped 2025</span>
+::: {.g-col-12 .g-col-md-6}
+Welcome to your year in {ggplot2} this is an interactive look at your favourite visualisation tool (at least in R).
 
-### Build your own!
+This report was built using the [{ggplot2wrapped}](https://charliejhadley.github.io/ggplot2wrapped/) package created by [Charlotte Hadley](https://www.linkedin.com/in/charliejhadley/) from GPCDS. 
 
-Build your own by following [code](code.html)
+> **Scroll on down** to visualise your visualisation of visualisations!
+
+:::
+
+::: {.g-col-12 .g-col-md-4}
+![](images/logo.png){width="250px"}
+:::
+
+::::
+
 \
 
-::: {.column-screen style="background-image:url(https://mschnetzer.github.io/img/scrollytell/kmh-plan.jpg); background-size: 100vw; height: 250px; background-position: center +0%; background-repeat: no-repeat;"}
+::: {.column-screen style="background-image:url(images/gpcds-wide-banner.png); background-size: 100vw; height: 396px; background-position: center +0%; background-repeat: no-repeat;"}
 :::
-<figcaption>Plan of [Karl-Marx-Hof](https://en.wikipedia.org/wiki/Karl-Marx-Hof), built between 1927 and 1930 by city planner Karl Ehn. Source: [Vielfalt der Moderne](https://vielfaltdermoderne.de/karl-marx-hof/)</figcaption>
 
 \
 
 <!---- START: geom icon grid ---->
-::::: {style="--cr-narrative-font-size:var(--size-large);--cr-narrative-sidebar-width: 2fr;--cr-section-background-color:white"}
+::::: {style="--cr-narrative-font-size:var(--size-large);--cr-narrative-sidebar-width: 2fr;--cr-section-background-color:#F9F7F1"}
 ::::{.cr-section layout="sidebar-right"}
 
 
@@ -274,7 +276,7 @@ highcharter::highchart() |>
 :::
 
 <!---- START: calendars ---->
-::::: {style="--cr-narrative-font-size:var(--size-large);--cr-narrative-sidebar-width: 2fr;--cr-section-background-color:white"}
+::::: {style="--cr-narrative-font-size:var(--size-large);--cr-narrative-sidebar-width: 2fr;--cr-section-background-color:#F9F7F1"}
 ::::{.cr-section layout="sidebar-left"}
 
 ::: {#cr-calendar-files-with-geoms}
@@ -345,15 +347,15 @@ vec_geoms_from_most_unique_day <- data_geom_usage |>
 ```
 
 Things look a lot different thinking about geom diversity!
-<br>
+
 You got your ggplot2 thesaurus out on `{r} date_most_unique_geoms[["modified_date"]]`, using `{r} date_most_unique_geoms[["calendar_measure"]]` unique geoms!
 <br>
-`{r} stringr::str_wrap(vec_geoms_from_most_unique_day)`
+<span style="font-size:var(--size-normal)">`{r} stringr::str_wrap(vec_geoms_from_most_unique_day)`</span>
 ::::
 
 :::::
 
-::::: {style="--cr-narrative-font-size:var(--size-large);--cr-narrative-sidebar-width: 0.5fr;--cr-section-background-color:white"}
+::::: {style="--cr-narrative-font-size:var(--size-large);--cr-narrative-sidebar-width: 0.5fr;--cr-section-background-color:#F9F7F1"}
 ::::{.cr-section layout="sidebar-left"}
 
 ::: {#cr-calendar-top-5-geoms}
@@ -371,19 +373,20 @@ data_geom_usage |>
 
 ::::
 
-:::::
+::::: {style="--cr-narrative-font-size:var(--size-large);--cr-narrative-sidebar-width: 0.5fr;--cr-section-background-color:#AA3D4F;"}
 
 ::::{.cr-section layout="sidebar-right"}
 
-::: {#cr-thats-a-complicated-question}
-<h2>Which geoms did you use together most often?</h2>
+::: {#cr-thats-a-complicated-question .large-fixed-text}
+<span style='color:#F9F7F1;'>Which geoms did you use together most often?</span>
 :::
 
 @cr-thats-a-complicated-question
 
-Well, that's complicated! Let's get into it!
+[Well, that's complicated! Let's get into it!]{.medim-fixed-text style='color:#F9F7F1;'}
 
 ::::
+:::::
 
 # {.page-columns .page-full}
 
@@ -413,7 +416,7 @@ data_geom_usage |>
 <br/>
 
 > We've thrown away some of your data to make this readable. 
-> Geoms only appear if they occur more than 10 times in your data and an interaction has to occur more than onc
+> Geoms only appear if they occur more than 10 times in your data and an interaction has to occur more than once
 
 ### Oh, wow! Tell me more about UpSet Charts
 
@@ -425,7 +428,7 @@ It's more than likely you've not seen many (or any!) UpSet Charts before. They w
 
 <!--- AES --->
 
-::::: {style="--cr-narrative-font-size:var(--size-large);--cr-narrative-sidebar-width: 2fr;--cr-section-background-color:white"}
+::::: {style="--cr-narrative-font-size:var(--size-large);--cr-narrative-sidebar-width: 2fr;--cr-section-background-color:#F9F7F1"}
 ::::{.cr-section layout="sidebar-left"}
 
 ::: {#cr-aes-explanation}
@@ -473,7 +476,7 @@ data_aes_by_package |>
 @cr-aes-explanation
 
 How can we talk about {ggplot2} without mentioning aesthetics?
-<br/>
+
 All `{r} scales::label_number(big.mark = ",")(sum(data_geom_usage$n_times_used))` times you used a geom they did their magic with either dataviz-level or geom-specific aes
 
 @cr-aes-type-by-package
@@ -481,13 +484,15 @@ All `{r} scales::label_number(big.mark = ",")(sum(data_geom_usage$n_times_used))
 Across all your geoms in 2025, `{r} scales::label_percent()(vec_aes_type[["Dataviz-level aes()"]] / sum(vec_aes_type))` of the time you provided dataviz-level aesthetics.
 
 Ohhh... but that chart mentions different packages?
-<br>
-The 2025 edition of the {ggplot2wrapped} report doesn't focus on comparing package usage. But if you take a look at our [documentation](link) you can analyse that data yourself 
+
+The 2025 edition of the {ggplot2wrapped} report doesn't focus on comparing package usage. 
+
+But if you take a look at our [documentation](https://charliejhadley.github.io/ggplot2wrapped/) you can analyse that data yourself 
 
 ::::
 :::::
 
-::::: {style="--cr-narrative-font-size:var(--size-large);--cr-section-background-color:white"}
+::::: {style="--cr-narrative-font-size:var(--size-large);--cr-section-background-color:#F9F7F1"}
 ::::{.cr-section layout="overlay-left"}
 
 ::: {#cr-aes-percentile style='width:80%;'}
@@ -505,17 +510,20 @@ Or such strong dataviz-level aesthetics!
 
 :::::
 
+::::: {style="--cr-narrative-font-size:var(--size-large);--cr-narrative-sidebar-width: 1fr;--cr-section-background-color:#AA3D4F;"}
+
 ::::{.cr-section layout="sidebar-right"}
 
-::: {#cr-look-at-arguments}
-<h2>Let's wrap up looking at the arguments!</h2>
+::: {#cr-look-at-arguments .large-fixed-text}
+<span style='color:#F9F7F1;'>Let's wrap up looking at the arguments!</span>
 :::
 
 @cr-look-at-arguments
 
-This might be the last pun?
+[This might be the last pun?]{.medim-fixed-text style='color:#F9F7F1;'}
 
 ::::
+:::::
 
 ```{r}
 number_zero_args_in_call <- data_geom_usage |> 
@@ -523,6 +531,7 @@ number_zero_args_in_call <- data_geom_usage |>
   nrow()
 ```
 
+\ 
 Just like all your data visualisations are different, your geom calls varied a lot!
 
 ::: {#cr-column-range style='width:100%;'}
@@ -616,7 +625,7 @@ label_compare_longest_most_args <- dplyr::if_else(list_longest_geom_call$geom_na
 
 - `{r} label_compare_longest_most_args`
 
-There's a lot more you can do with the [package](link) but we'll sign off with what you were probably expecting and we'd hate to let you down:
+There's a lot more you can do with the [{ggplot2} package](https://charliejhadley.github.io/ggplot2wrapped/) but we'll sign off with what you were probably expecting and we'd hate to let you down:
 
 ```{r}
 data_geom_usage |> 
@@ -634,8 +643,41 @@ data_geom_usage |>
                         style = list(fontSize = 28))
 ```
 
+\
 
+::::: {style="--cr-narrative-font-size:var(--size-large);--cr-narrative-sidebar-width: 1fr;--cr-section-background-color:#AA3D4F;"}
 
+::::{.cr-section layout="sidebar-right"}
 
+::: {#cr-sound-off .large-fixed-text}
+<span style='color:#F9F7F1;'>That was fun! Next year there'll be more, this package and report was thrown together in a week</span>
+:::
 
+@cr-sound-off
 
+[How was this built?]{.medim-fixed-text style='color:#F9F7F1;'}
+
+::::
+:::::
+
+\
+
+This package and report depends on several tools from within R:
+
+- Geom usage was analysed using Abstract Syntax Trees via the {astgrepr} package
+
+- Static charts were built with {ggplot2}
+
+- Interactive charts were built with a mixture of {highcharter} and {upsetjs}
+
+- The report itself was written using a Quarto extension called [Closeread](https://closeread.dev/) for scrollytelling
+
+> The report was built by me - Charlotte Hadley from [gpcds.com](www.gpcds.com). 
+>
+> I can be [found on LinkedIn](https://www.linkedin.com/in/charliejhadley/) if that's your thing.
+>
+> I would genuinely love to see you share your {ggplot2wrapped} reports and charts. 
+>
+> There's **lots** more you can do yourself with the `add_geom_usage_to_files()` function. Share what you build and consider contributing to the package, [https://github.com/charliejhadley/ggplot2wrapped](https://github.com/charliejhadley/ggplot2wrapped).
+
+\

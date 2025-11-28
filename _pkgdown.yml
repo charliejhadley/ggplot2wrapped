@@ -5,3 +5,6 @@ navbar:
   structure:
     left:  [intro, reference, articles, tutorials, news]
     right: [search, github, lightswitch]
+resource_files:
+  - data/mydata.csv
+  - images/figure.png
