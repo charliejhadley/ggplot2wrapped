@@ -27,6 +27,10 @@ Within the package you will find 3 kinds of things:
 - Individual visualisation functions used within the interactive report
   for exploring your geom usage
 
+> This runs fully local and doesn’t use LLMs. In fact, not only is it
+> LLM free it was also built and designed by hand. Slop free through and
+> through.
+
 ## Installation
 
 This package is currently only available on GitHub and has a few
