@@ -4,7 +4,7 @@
 #' data to your files.
 #'
 #' @export
-add_geom_usage_to_files <- function(data_file_info){
+add_geom_usage_to_files <- function(data_file_info, data_geoms = ggplot2wrapped::data_geoms){
 
   data_file_info |>
     dplyr::mutate(geom_usage = get_geoms_from_code_file(file_path, data_geoms)) |>

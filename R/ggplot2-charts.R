@@ -250,9 +250,9 @@ make_geom_usage_calendar <- function(data_geom_usage, measure = c("per_day_indiv
   data_geom_summarised <- summarise_per_day(data_geom_usage, measure)
 
   title_text <- switch (measure,
-                                  "per_day_files_with_geoms" = "Number of files with geoms created per day",
+                                  "per_day_files_with_geoms" = "Number of files with geoms modified per day",
                                   "per_day_unique_geoms" = "Unique geoms used per day",
-                                  "per_day_total_geom_usage" = "Total number of geoms created per day",
+                                  "per_day_total_geom_usage" = "Total number of geoms modified per day",
                         "per_day_individual_geom_usage" = "Per day usage for your top 5 geoms"
   )
 
