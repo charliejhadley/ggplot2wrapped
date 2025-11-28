@@ -4,19 +4,22 @@
 \name{ggplot2wrapped-package}
 \alias{ggplot2wrapped}
 \alias{ggplot2wrapped-package}
-\title{ggplot2wrapped: What the Package Does (One Line, Title Case)}
+\title{ggplot2wrapped: Your Year in {ggplot2}! Plus Tools For Exploring Your Dataviz With {ggplot2}!}
 \description{
-What the package does (one paragraph).
+\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
+
+This package is intended to provide a Spotify Wrapped experience for {ggplot2} users! There are interactive reports for summarising your usage of geoms through the year and tools for analysing your code files throigh the use of abstract syntax trees with the {astgrepr} package.
 }
 \seealso{
 Useful links:
 \itemize{
   \item \url{https://charliejhadley.github.io/ggplot2wrapped/}
+  \item \url{https://github.com/charliejhadley/ggplot2wrapped}
 }
 
 }
 \author{
-\strong{Maintainer}: First Last \email{first.last@example.com}
+\strong{Maintainer}: Charlotte Hadley \email{hello@gpcds.com} (\href{https://orcid.org/0000-0002-3039-6849}{ORCID})
 
 }
 \keyword{internal}
