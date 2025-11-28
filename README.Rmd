@@ -41,7 +41,7 @@ This package is currently only available on GitHub and has a few dependencies to
 This should then work:
 
 ```{r, eval=FALSE}
-remotes::install_github("visibledcharliejhadley/ggplot2wrapped")
+remotes::install_github("charliejhadley/ggplot2wrapped")
 ```
 
 If it doesn't you may have issues with a dependency {highcharter} which itself depends on {igraph}. 

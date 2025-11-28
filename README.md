@@ -38,7 +38,7 @@ dependencies to be aware of.
 This should then work:
 
 ``` r
-remotes::install_github("visibledcharliejhadley/ggplot2wrapped")
+remotes::install_github("charliejhadley/ggplot2wrapped")
 ```
 
 If it doesn’t you may have issues with a dependency {highcharter} which
