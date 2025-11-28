@@ -3,13 +3,14 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# ggplot2wrapped
-
 <!-- badges: start -->
 
 <!-- badges: end -->
 
 > Your year in {ggplot2}!
+>
+> [Check out an example ggplot2wrapped report for
+> 2025!](https://charliejhadley.github.io/ggplot2wrapped-2025-example/)
 
 This package attempts to give you the Spotify Wrapped experience but
 looking at how you use the incredible {gglot2} package for visualising
