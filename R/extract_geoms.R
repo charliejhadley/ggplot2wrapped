@@ -18,6 +18,27 @@ add_geom_usage_to_files <- function(
 }
 
 
+#' Read code from file
+#'
+#' Helper function to read R code from a file, handling .Rmd and .qmd files
+#'
+#' @param file_path Path to a code file (.R, .Rmd, or .qmd)
+#' @returns A character string containing the R code from the file
+#' @keywords internal
+read_code_from_file <- function(file_path) {
+  file_ext <- tools::file_ext(file_path)
+
+  if (file_ext %in% c("Rmd", "qmd")) {
+    tmp_r <- tempfile(fileext = ".R")
+    knitr::purl(file_path, output = tmp_r, quiet = TRUE)
+    code_file <- paste0(readLines(tmp_r, warn = FALSE), collapse = "\n")
+    unlink(tmp_r)
+    code_file
+  } else {
+    paste0(readLines(file_path, warn = FALSE), collapse = "\n")
+  }
+}
+
 #' Find geom calls
 #'
 #' Helper function to recursively find geom function calls in parsed R code
@@ -100,18 +121,8 @@ find_geom_calls_in_parsed_code <- function(expr, geom_names) {
 get_geoms_from_code_file <- function(file_path, geoms_dataset) {
   # Vectorisation utility function
   get_geoms_from_code_file_singular <- function(file_path) {
-    # Handle .Rmd and .qmd files by extracting R code first
-    file_ext <- tools::file_ext(file_path)
-    if (file_ext %in% c("Rmd", "qmd")) {
-      tmp_r <- tempfile(fileext = ".R")
-      knitr::purl(file_path, output = tmp_r, quiet = TRUE)
-      code_file <- paste0(readLines(tmp_r, warn = FALSE), collapse = "\n")
-      unlink(tmp_r)
-    } else {
-      code_file <- paste0(readLines(file_path, warn = FALSE), collapse = "\n")
-    }
+    code_file <- read_code_from_file(file_path)
 
-    # Parse the code file
     parsed_code <- parse(text = code_file)
 
     # Get list of geom names to search for
