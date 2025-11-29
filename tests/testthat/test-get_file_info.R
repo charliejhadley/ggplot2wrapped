@@ -89,7 +89,18 @@ test_that("get_geoms_from_code_file works with file without geoms", {
 
   result_df <- result[[1]]
 
-  expect_equal(nrow(result_df), 1)
-  expect_true(is.na(result_df$geom_name[1]))
+  expected_df <- tibble::tibble(
+    geom_name = NA_character_,
+    has_aes = NA,
+    function_call = list(
+      NULL
+    ),
+    length_of_call = NA_real_,
+    n_args_in_call = NA_real_,
+    n_times_used = NA_integer_,
+    package_name = NA_character_
+  )
+
+  expect_equal(result_df, expected_df)
 })
 
