@@ -1,0 +1,19 @@
+---
+title: "No Geoms Document"
+---
+
+# Analysis without plots
+
+This document mentions geom_point in text but has no actual geom calls.
+
+```{r}
+library(dplyr)
+data <- mtcars %>%
+  filter(mpg > 20)
+```
+
+We could use geom_histogram here but we won't.
+
+```{r}
+summary(data)
+```
