@@ -52,7 +52,16 @@ get_geoms_from_code_file <- function(file_path, geoms_dataset){
   # Vectorisation utility function
   get_geoms_from_code_file_singular <- function(file_path){
 
-  code_file <- paste0(readLines(file_path, warn = FALSE),collapse = "\n")
+  # Handle .Rmd and .qmd files by extracting R code first
+  file_ext <- tools::file_ext(file_path)
+  if (file_ext %in% c("Rmd", "qmd")) {
+    tmp_r <- tempfile(fileext = ".R")
+    knitr::purl(file_path, output = tmp_r, quiet = TRUE)
+    code_file <- paste0(readLines(tmp_r, warn = FALSE), collapse = "\n")
+    unlink(tmp_r)
+  } else {
+    code_file <- paste0(readLines(file_path, warn = FALSE), collapse = "\n")
+  }
 
   root <- code_file |>
     astgrepr::tree_new() |>
@@ -83,14 +92,27 @@ get_geoms_from_code_file <- function(file_path, geoms_dataset){
     tibble::enframe(name = "geom_name", value = "geom_function_calls") |>
     tidyr::unnest(geom_function_calls) |>
     tidyr::unnest(geom_function_calls) |>
-    dplyr::mutate(function_call = extract_geom_arguments(geom_function_calls)) |>
-    dplyr::mutate(length_of_call = stringr::str_length(stringr::str_remove(geom_function_calls, geom_name)) - 2) |>
-    dplyr::mutate(n_args_in_call = map_dbl(function_call, nrow)) |>
-    dplyr::mutate(has_aes = map_lgl(function_call, ~any(.x[["is_aes"]])), .after = geom_name) |>
+    dplyr::mutate(
+      function_call = extract_geom_arguments(geom_function_calls)
+    ) |>
+    dplyr::mutate(
+      length_of_call = stringr::str_length(stringr::str_remove(
+        geom_function_calls,
+        geom_name
+      )) -
+        2
+    ) |>
+    dplyr::mutate(n_args_in_call = purrr::map_dbl(function_call, nrow)) |>
+    dplyr::mutate(
+      has_aes = purrr::map_lgl(function_call, ~ any(.x[["is_aes"]])),
+      .after = geom_name
+    ) |>
     dplyr::select(-geom_function_calls) |>
     dplyr::mutate(n_times_used = dplyr::n(), .by = geom_name) |>
-    dplyr::left_join(select(geoms_dataset, geom_name, package_name),
-              by = c("geom_name"))
+    dplyr::left_join(
+      dplyr::select(geoms_dataset, geom_name, package_name),
+      by = c("geom_name")
+    )
 
   ## Create single row tibble if no geoms found
   if(nrow(data_geom_usage) == 0){
@@ -133,11 +155,12 @@ extract_geom_arguments <- function(geom_call){
   args_list <- call_list[-1]
 
   raw_args_df <- args_list |>
-    tibble::enframe(name = "argument_name",
-            value = "argument_value") |>
-    dplyr::mutate(argument_number = row_number()) |>
-    dplyr::mutate(argument_value = as.character(argument_value),
-           argument_name = as.character(argument_name))
+    tibble::enframe(name = "argument_name", value = "argument_value") |>
+    dplyr::mutate(argument_number = dplyr::row_number()) |>
+    dplyr::mutate(
+      argument_value = as.character(argument_value),
+      argument_name = as.character(argument_name)
+    )
 
   # remove positional arg names
   raw_args_df <- raw_args_df |>

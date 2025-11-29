@@ -9,21 +9,27 @@
 #' RMarkdown.
 #' @returns A tibble.
 #' @export
-get_code_file_info <- function(paths, file_type = c(".R", ".qmd", "Rmd")){
-
-  if(!all(purrr::map_lgl(paths, file.exists))){
-
+get_code_file_info <- function(paths, file_type = c(".R", ".qmd", "Rmd")) {
+  if (!all(purrr::map_lgl(paths, file.exists))) {
     cli::cli_abort(c(
       "{.var paths} must all be valid paths, at least one is invalid"
     ))
-
   }
 
-
-  pattern_file_types <- paste0(purrr::map(file_type, ~paste0("(\\", .x, "$)")), collapse = "|")
+  pattern_file_types <- paste0(
+    purrr::map(file_type, ~ paste0("(\\", .x, "$)")),
+    collapse = "|"
+  )
 
   vec_code_files <- paths |>
-    purrr::map(~list.files(.x, recursive = TRUE, full.names = TRUE, pattern = pattern_file_types)) |>
+    purrr::map(
+      ~ list.files(
+        .x,
+        recursive = TRUE,
+        full.names = TRUE,
+        pattern = pattern_file_types
+      )
+    ) |>
     unlist()
 
   dplyr::tibble(
@@ -31,9 +37,10 @@ get_code_file_info <- function(paths, file_type = c(".R", ".qmd", "Rmd")){
   ) |>
     dplyr::mutate(file_info = file.info(file_path)) |>
     tidyr::unnest(file_info) |>
-    dplyr::select(file_path,
-           modified_time = "mtime",
-           created_time = "ctime",
-           access_time = "atime"
+    dplyr::select(
+      file_path,
+      modified_time = "mtime",
+      created_time = "ctime",
+      access_time = "atime"
     )
 }

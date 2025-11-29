@@ -12,12 +12,11 @@ RoxygenNote: 7.3.3
 Depends: 
     R (>= 3.5)
 LazyData: true
-Suggests: 
-    knitr,
+Suggests:
     rmarkdown,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
-Imports: 
+Imports:
     astgrepr,
     cli,
     dplyr,
@@ -27,6 +26,7 @@ Imports:
     GPCDStools,
     highcharter,
     igraph,
+    knitr,
     lubridate,
     magick,
     praise,

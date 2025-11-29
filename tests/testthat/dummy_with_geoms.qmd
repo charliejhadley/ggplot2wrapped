@@ -1,0 +1,32 @@
+---
+title: "Quarto Test Document"
+format: html
+---
+
+# Quarto Analysis
+
+We often use geom_histogram and geom_density for distributions.
+
+```{r}
+#| label: setup
+library(ggplot2)
+```
+
+Creating visualizations with geom_boxplot:
+
+```{r}
+#| label: fig-scatter
+#| fig-cap: "Scatter plot using geom_point"
+ggplot(mtcars) +
+  geom_point(aes(mpg, hp), size = 2)
+```
+
+Text about geom_violin shouldn't be detected.
+
+```{r}
+ggplot() +
+  geom_bar(aes(x = category), stat = "count") +
+  geom_text(aes(x = x, y = y, label = "foo"))
+```
+
+Inline code like `geom_ribbon()` shouldn't be detected either.

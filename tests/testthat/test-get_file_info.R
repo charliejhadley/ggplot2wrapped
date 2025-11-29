@@ -1,3 +1,15 @@
+na_df <- tibble::tibble(
+    geom_name = NA_character_,
+    has_aes = NA,
+    function_call = list(
+      NULL
+    ),
+    length_of_call = NA_real_,
+    n_args_in_call = NA_real_,
+    n_times_used = NA_integer_,
+    package_name = NA_character_
+  )
+
 test_that("get_geoms_from_code_file works with file containing geoms", {
   result <- get_geoms_from_code_file(
     testthat::test_path("dummy_with_geoms.R"),
@@ -89,18 +101,78 @@ test_that("get_geoms_from_code_file works with file without geoms", {
 
   result_df <- result[[1]]
 
-  expected_df <- tibble::tibble(
-    geom_name = NA_character_,
-    has_aes = NA,
-    function_call = list(
-      NULL
-    ),
-    length_of_call = NA_real_,
-    n_args_in_call = NA_real_,
-    n_times_used = NA_integer_,
-    package_name = NA_character_
+  expect_equal(result_df, na_df)
+})
+
+test_that("get_geoms_from_code_file works with Rmd file", {
+  result <- get_geoms_from_code_file(
+    testthat::test_path("dummy_with_geoms.Rmd"),
+    data_geoms
   )
 
-  expect_equal(result_df, expected_df)
+  result_df <- result[[1]]
+
+  expect_equal(nrow(result_df), 4)
+
+  expect_equal(
+    result_df$geom_name,
+    c("geom_line", "geom_point", "geom_point", "geom_smooth")
+  )
+
+  expect_equal(result_df$has_aes, c(TRUE, TRUE, FALSE, TRUE))
+
+  expect_equal(result_df$n_args_in_call, c(2, 1, 2, 1))
+
+  expect_equal(
+    result_df$package_name,
+    c("ggplot2", "ggplot2", "ggplot2", "ggplot2")
+  )
+})
+
+test_that("get_geoms_from_code_file works with qmd file", {
+  result <- get_geoms_from_code_file(
+    testthat::test_path("dummy_with_geoms.qmd"),
+    data_geoms
+  )
+
+  result_df <- result[[1]]
+
+  expect_equal(nrow(result_df), 3)
+
+  expect_equal(
+    result_df$geom_name,
+    c("geom_bar", "geom_point", "geom_text")
+  )
+
+  expect_equal(result_df$has_aes, c(TRUE, TRUE, TRUE))
+
+  expect_equal(result_df$n_args_in_call, c(2, 2, 1))
+
+  expect_equal(
+    result_df$package_name,
+    c("ggplot2", "ggplot2", "ggplot2")
+  )
+})
+
+test_that("get_geoms_from_code_file works with Rmd without geoms", {
+  result <- get_geoms_from_code_file(
+    testthat::test_path("dummy_without_geoms.Rmd"),
+    data_geoms
+  )
+
+  result_df <- result[[1]]
+
+  expect_equal(result_df, na_df)
+})
+
+test_that("get_geoms_from_code_file works with qmd without geoms", {
+  result <- get_geoms_from_code_file(
+    testthat::test_path("dummy_without_geoms.qmd"),
+    data_geoms
+  )
+
+  result_df <- result[[1]]
+
+  expect_equal(result_df, na_df)
 })
 
