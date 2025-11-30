@@ -36,9 +36,9 @@ params:
 # library("janitor")
 
 if (params$executed_from == "direct_from_file") {
-  load(system.file("quarto-reports", "ggplot2-unwrapped-2025_scrollytelling","data_geom_usage_example.RData", package = "ggplot2wrapped"))
-  
-  data_geom_usage <- data_geom_usage_example
+  load(system.file("quarto-reports", "ggplot2-unwrapped-2025_scrollytelling","data_example_geom_usage.RData", package = "ggplot2wrapped"))
+
+  data_geom_usage <- data_example_geom_usage
   
   data_geom_details <- ggplot2wrapped::data_geoms
 } else {
@@ -313,7 +313,7 @@ month_most_files <- data_summary_files_per_day |>
 
 What a chart full year!
 <br>
-In total `{r} sum(data_summary_files_per_day$total_files)` files were created that contained geoms!
+In total `{r} scales::label_number(big.mark = ",")(sum(data_summary_files_per_day$total_files))` files were created that contained geoms!
 
 Your busiest month(s) were `{r} month_most_files[["month_name"]]`.
 <br>
@@ -348,7 +348,11 @@ vec_geoms_from_most_unique_day <- data_geom_usage |>
 
 Things look a lot different thinking about geom diversity!
 
-You got your ggplot2 thesaurus out on `{r} date_most_unique_geoms[["modified_date"]]`, using `{r} date_most_unique_geoms[["calendar_measure"]]` unique geoms!
+You got your ggplot2 thesaurus out on:
+<br/>
+<span style="font-size:var(--size-normal)">`{r} paste(date_most_unique_geoms[["modified_date"]], collapse = ", ")`</span>
+<br/>
+On these dates you used `{r} unique(date_most_unique_geoms[["calendar_measure"]])` unique geoms!
 <br>
 <span style="font-size:var(--size-normal)">`{r} stringr::str_wrap(vec_geoms_from_most_unique_day)`</span>
 ::::

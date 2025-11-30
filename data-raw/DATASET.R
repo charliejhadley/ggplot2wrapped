@@ -71,12 +71,16 @@ data_geom_usage_all_files <- code_files |>
 data_example_geom_usage <- data_geom_usage_all_files |>
   filter(between(year(modified_time), 2021, 2025)) |>
   mutate(modified_time = ymd_hms(paste("2025", month(modified_time), day(modified_time), " ", hour(modified_time), minute(modified_time), second(modified_time))), .before = 1) |>
+  mutate(created_time = ymd_hms(paste("2025", month(created_time), day(created_time), " ", hour(created_time), minute(created_time), second(created_time))), .before = 1) |>
+  mutate(access_time = ymd_hms(paste("2025", month(access_time), day(access_time), " ", hour(access_time), minute(access_time), second(access_time))), .before = 1) |>
   mutate(file_path = fct_anon(file_path, prefix = "anonymised file ")) |>
   select(file_path, ends_with("time"), geom_name, has_aes, n_args_in_call, n_times_used, length_of_call, package_name)
 
 usethis::use_data(data_example_geom_usage, overwrite = TRUE)
 
-save(data_geom_usage_example, file = system.file("quarto-reports", "ggplot2-unwrapped-2025_scrollytelling","data_geom_usage_example.RData", package = "ggplot2wrapped"))
+save(data_example_geom_usage, file = "inst/quarto-reports/ggplot2-unwrapped-2025_scrollytelling/data_example_geom_usage.RData")
+
+# save(data_example_geom_usage, file = system.file("quarto-reports", "ggplot2-unwrapped-2025_scrollytelling","data_example_geom_usage.RData", package = "ggplot2wrapped"))
 
 
 # data_geom_usage_2022 |>

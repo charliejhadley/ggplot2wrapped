@@ -191,8 +191,8 @@ summarise_per_day <- function(data_geom_usage, measure = c("per_day_individual_g
 
           "per_day_files_with_geoms" = data_geom_usage |>
             dplyr::mutate(modified_date = lubridate::as_date(modified_time)) |>
-            dplyr::select(geom_name, modified_date, n_times_used) |>
-            dplyr::summarise(calendar_measure = sum(n_times_used), .by = c(geom_name, modified_date)),
+            dplyr::select(file_path, modified_date) |>
+            dplyr::summarise(calendar_measure = dplyr::n(), .by = c(file_path, modified_date)),
 
           "per_day_unique_geoms" = data_geom_usage |>
             dplyr::mutate(modified_date = lubridate::as_date(modified_time)) |>
@@ -253,28 +253,31 @@ make_geom_usage_calendar <- function(data_geom_usage, measure = c("per_day_indiv
                                   "per_day_files_with_geoms" = "Number of files with geoms modified per day",
                                   "per_day_unique_geoms" = "Unique geoms used per day",
                                   "per_day_total_geom_usage" = "Total number of geoms modified per day",
-                        "per_day_individual_geom_usage" = "Per day usage for your top 5 geoms"
+                        "per_day_individual_geom_usage" = "Per day usage for your top 4 geoms"
   )
 
   if(measure == "per_day_individual_geom_usage"){
+
+    top_4_geoms <- data_summary_geom_calls |>
+      dplyr::slice_max(total_times_used,
+                       n = 4) |>
+      dplyr::arrange(dplyr::desc(total_times_used)) |>
+      dplyr::pull(geom_name)
+
+    data_geom_summarised <- data_geom_usage |>
+      dplyr::mutate(geom_name = dplyr::if_else(geom_name %in% top_4_geoms, geom_name, "All other geoms")) |>
+      summarise_per_day("per_day_individual_geom_usage")
 
     data_geom_calendar <- data_geom_summarised |>
       fill_geom_usage_date_data_with_nesting(geom_name) |>
       dplyr::mutate(total_usage = sum(calendar_measure, na.rm = TRUE), .by = geom_name)
 
-    most_common_geoms <- data_geom_calendar |>
-      dplyr::distinct(geom_name, total_usage) |>
-      dplyr::slice_max(total_usage, n = 5) |>
-      dplyr::arrange(desc(total_usage))
-
-
     tab <- data_geom_calendar |>
       dplyr::summarise(nmin = min(n_week), .by = "month")
 
-
     data_geom_calendar |>
-      dplyr::filter(geom_name %in% most_common_geoms$geom_name) |>
-      dplyr::mutate(geom_name = forcats::fct_relevel(geom_name, most_common_geoms$geom_name)) |>
+      dplyr::mutate(geom_name = forcats::fct_relevel(geom_name, top_4_geoms),
+                    geom_name = forcats::fct_relevel(geom_name, "All other geoms", after = Inf)) |>
       ggplot2::ggplot() +
       ggplot2::aes(n_week, weekday_label) +
       geom_rtile(
