@@ -39,6 +39,165 @@ read_code_from_file <- function(file_path) {
   }
 }
 
+#' Extract a complete function call from text
+#'
+#' Helper to extract a complete function call by matching parentheses
+#'
+#' @param text Character string containing code
+#' @param start_pos Position where the opening ( appears
+#' @returns Character string with the complete call, or NULL if can't extract
+#' @keywords internal
+extract_complete_call <- function(text, start_pos) {
+  chars <- strsplit(text, "")[[1]]
+  depth <- 0
+  in_string <- FALSE
+  string_char <- NULL
+  escape_next <- FALSE
+
+  for (i in start_pos:length(chars)) {
+    char <- chars[i]
+
+    # Handle escape sequences
+    if (escape_next) {
+      escape_next <- FALSE
+      next
+    }
+    if (char == "\\" && in_string) {
+      escape_next <- TRUE
+      next
+    }
+
+    # Handle string boundaries
+    if (char %in% c("'", '"') && !in_string) {
+      in_string <- TRUE
+      string_char <- char
+    } else if (char == string_char && in_string) {
+      in_string <- FALSE
+      string_char <- NULL
+    }
+
+    # Track parenthesis depth (only when not in string)
+    if (!in_string) {
+      if (char == "(") depth <- depth + 1
+      if (char == ")") {
+        depth <- depth - 1
+        if (depth == 0) {
+          # Found the closing paren
+          return(paste(chars[start_pos:i], collapse = ""))
+        }
+      }
+    }
+  }
+
+  # Couldn't find matching closing paren
+  return(NULL)
+}
+
+#' Find geom calls via pattern matching
+#'
+#' Fallback function to find geom usage via string pattern matching
+#' when code cannot be parsed due to syntax errors
+#'
+#' @param code_text Character string containing the code
+#' @param geom_names Character vector of geom names to search for
+#' @param geoms_dataset The geoms dataset for package info
+#' @returns A tibble with geom usage info (limited detail since parsing failed)
+#' @keywords internal
+find_geoms_by_pattern <- function(code_text, geom_names, geoms_dataset) {
+  # Search for each geom name and try to extract full calls
+  results <- list()
+
+  for (geom in geom_names) {
+    # Pattern: geom name followed by optional whitespace and (
+    pattern <- paste0(geom, "\\s*\\(")
+    matches <- gregexpr(pattern, code_text)[[1]]
+
+    if (matches[1] != -1) {
+      for (match_pos in matches) {
+        # Find where the opening parenthesis is
+        substr_after <- substring(code_text, match_pos)
+        paren_pos <- regexpr("\\(", substr_after)
+        if (paren_pos > 0) {
+          # Extract complete call starting from the (
+          call_from_paren <- extract_complete_call(code_text, match_pos + paren_pos - 1)
+
+          if (!is.null(call_from_paren)) {
+            # Reconstruct full call with geom name
+            full_call <- paste0(geom, call_from_paren)
+
+            # Try to parse this individual call to extract details
+            parsed_call <- tryCatch(
+              parse(text = full_call),
+              error = function(e) NULL
+            )
+
+            if (!is.null(parsed_call)) {
+              # We can parse it! Extract detailed info
+              func_call_details <- extract_geom_arguments(full_call)[[1]]
+              has_aes <- if (nrow(func_call_details) > 0) {
+                any(func_call_details$is_aes)
+              } else {
+                FALSE
+              }
+              n_args <- nrow(func_call_details)
+              length_call <- stringr::str_length(stringr::str_remove(full_call, geom)) - 2
+
+              results[[length(results) + 1]] <- list(
+                geom_name = geom,
+                has_aes = has_aes,
+                function_call = func_call_details,
+                length_of_call = length_call,
+                n_args_in_call = n_args
+              )
+            } else {
+              # Can't parse the individual call either
+              results[[length(results) + 1]] <- list(
+                geom_name = geom,
+                has_aes = NA,
+                function_call = NULL,
+                length_of_call = NA_real_,
+                n_args_in_call = NA_real_
+              )
+            }
+          }
+        }
+      }
+    }
+  }
+
+  if (length(results) == 0) {
+    # No geoms found, return empty result
+    empty_result <- tibble::tibble(
+      geom_name = character(0),
+      has_aes = logical(0),
+      function_call = list(),
+      length_of_call = numeric(0),
+      n_args_in_call = numeric(0),
+      n_times_used = integer(0),
+      package_name = character(0)
+    )
+    return(dplyr::add_row(empty_result))
+  }
+
+  # Convert to tibble
+  result_df <- tibble::tibble(
+    geom_name = purrr::map_chr(results, "geom_name"),
+    has_aes = purrr::map(results, "has_aes") |> unlist(),
+    length_of_call = purrr::map_dbl(results, "length_of_call"),
+    n_args_in_call = purrr::map_dbl(results, "n_args_in_call")
+  )
+
+  # Add function_call as a list column
+  result_df$function_call <- purrr::map(results, "function_call")
+
+  result_df |>
+    dplyr::mutate(n_times_used = dplyr::n(), .by = geom_name) |>
+    dplyr::left_join(
+      dplyr::select(geoms_dataset, geom_name, package_name),
+      by = "geom_name"
+    )
+}
+
 #' Find geom calls
 #'
 #' Helper function to recursively find geom function calls in parsed R code
@@ -57,7 +216,7 @@ find_geom_calls_in_parsed_code <- function(expr, geom_names) {
     if (is.call(e)) {
       # Check if this is a function call we're looking for
       func_name <- as.character(e[[1]])
-      if (func_name %in% geom_names) {
+      if (length(func_name) == 1 && func_name %in% geom_names) {
         # Deparse to get the full text of the call
         call_text <- paste(deparse(e), collapse = " ")
         # Add to results
@@ -69,8 +228,8 @@ find_geom_calls_in_parsed_code <- function(expr, geom_names) {
       }
     } else if (is.list(e) || is.expression(e)) {
       # Recursively search within list/expression
-      for (item in e) {
-        find_calls_recursive(item)
+      for (i in seq_along(e)) {
+        find_calls_recursive(e[[i]])
       }
     }
   }
@@ -123,10 +282,19 @@ get_geoms_from_code_file <- function(file_path, geoms_dataset) {
   get_geoms_from_code_file_singular <- function(file_path) {
     code_file <- read_code_from_file(file_path)
 
-    parsed_code <- parse(text = code_file)
-
     # Get list of geom names to search for
     vec_geoms <- dplyr::pull(geoms_dataset, geom_name)
+
+    # Try to parse the code - if it fails (syntax error), fall back to pattern matching
+    parsed_code <- tryCatch(
+      parse(text = code_file),
+      error = function(e) NULL
+    )
+
+    # If parsing failed, use pattern matching fallback
+    if (is.null(parsed_code)) {
+      return(find_geoms_by_pattern(code_file, vec_geoms, geoms_dataset))
+    }
 
     geom_calls <- find_geom_calls_in_parsed_code(parsed_code, vec_geoms)
 

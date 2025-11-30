@@ -10,7 +10,7 @@ na_df <- tibble::tibble(
     package_name = NA_character_
   )
 
-test_that("get_geoms_from_code_file works with file containing geoms", {
+test_that("get_geoms_from_code_file works with {{ }}", {
   result <- get_geoms_from_code_file(
     testthat::test_path("dummy_breaking_code.R"),
     data_geoms
@@ -20,6 +20,79 @@ test_that("get_geoms_from_code_file works with file containing geoms", {
 
   expect_equal(result_df, na_df)
 
+}
+)
+
+test_that("get_geoms_from_code_file works with { in strings", {
+  result <- get_geoms_from_code_file(
+    testthat::test_path("dummy_brace_in_string.R"),
+    data_geoms
+  )
+
+  result_df <- result[[1]]
+
+  expect_equal(result_df, na_df)
+
+}
+)
+
+test_that("get_geoms_from_code_file works with invalid code", {
+  result <- get_geoms_from_code_file(
+    testthat::test_path("dummy_invalid_code.R"),
+    data_geoms
+  )
+
+  result_df <- result[[1]]
+
+  expect_equal(result_df, na_df)
+
+}
+)
+
+test_that("get_geoms_from_code_file detects geoms in invalid code via pattern matching", {
+  result <- get_geoms_from_code_file(
+    testthat::test_path("dummy_invalid_with_geom.R"),
+    data_geoms
+  )
+
+  result_df <- result[[1]]
+
+  # Should detect geom_point even though code has syntax error
+  expect_equal(nrow(result_df), 1)
+  expect_equal(result_df$geom_name, "geom_point")
+  expect_equal(result_df$package_name, "ggplot2")
+
+  # Since geom_point() is a valid call, we should extract details
+  expect_equal(result_df$has_aes, FALSE)
+  expect_equal(result_df$length_of_call, 0)
+  expect_equal(result_df$n_args_in_call, 0)
+  expect_equal(result_df$n_times_used, 1L)
+}
+)
+
+test_that("get_geoms_from_code_file extracts details from valid geom calls in invalid code", {
+  result <- get_geoms_from_code_file(
+    testthat::test_path("dummy_invalid_with_detailed_geom.R"),
+    data_geoms
+  )
+
+  result_df <- result[[1]]
+
+  # Should detect geom_point and extract full details
+  expect_equal(nrow(result_df), 1)
+  expect_equal(result_df$geom_name, "geom_point")
+  expect_equal(result_df$package_name, "ggplot2")
+
+  # Should extract detailed info since the geom call itself is valid
+  expect_equal(result_df$has_aes, TRUE)
+  expect_equal(result_df$n_args_in_call, 3)
+  expect_equal(result_df$n_times_used, 1L)
+
+  # Check the function_call details
+  func_call <- result_df$function_call[[1]]
+  expect_equal(nrow(func_call), 3)
+  expect_equal(func_call$is_aes, c(FALSE, FALSE, TRUE))
+  expect_equal(func_call$argument_name, c("color", "size", ""))
 }
 )
 
