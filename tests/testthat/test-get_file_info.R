@@ -12,6 +12,20 @@ na_df <- tibble::tibble(
 
 test_that("get_geoms_from_code_file works with file containing geoms", {
   result <- get_geoms_from_code_file(
+    testthat::test_path("dummy_breaking-code.R"),
+    data_geoms
+  )
+
+  result_df <- result[[1]]
+
+  expect_equal(result_df, na_df)
+
+}
+)
+
+
+test_that("get_geoms_from_code_file works with file containing geoms", {
+  result <- get_geoms_from_code_file(
     testthat::test_path("dummy_with_geoms.R"),
     data_geoms
   )
