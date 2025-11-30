@@ -62,11 +62,37 @@ test_that("get_geoms_from_code_file detects geoms in invalid code via pattern ma
   expect_equal(result_df$geom_name, "geom_point")
   expect_equal(result_df$package_name, "ggplot2")
 
-  # Detailed info should be NA since we couldn't parse the code
-  expect_true(is.na(result_df$has_aes))
-  expect_true(is.na(result_df$length_of_call))
-  expect_true(is.na(result_df$n_args_in_call))
+  # Since geom_point() is a valid call, we should extract details
+  expect_equal(result_df$has_aes, FALSE)
+  expect_equal(result_df$length_of_call, 0)
+  expect_equal(result_df$n_args_in_call, 0)
   expect_equal(result_df$n_times_used, 1L)
+}
+)
+
+test_that("get_geoms_from_code_file extracts details from valid geom calls in invalid code", {
+  result <- get_geoms_from_code_file(
+    testthat::test_path("dummy_invalid_with_detailed_geom.R"),
+    data_geoms
+  )
+
+  result_df <- result[[1]]
+
+  # Should detect geom_point and extract full details
+  expect_equal(nrow(result_df), 1)
+  expect_equal(result_df$geom_name, "geom_point")
+  expect_equal(result_df$package_name, "ggplot2")
+
+  # Should extract detailed info since the geom call itself is valid
+  expect_equal(result_df$has_aes, TRUE)
+  expect_equal(result_df$n_args_in_call, 3)
+  expect_equal(result_df$n_times_used, 1L)
+
+  # Check the function_call details
+  func_call <- result_df$function_call[[1]]
+  expect_equal(nrow(func_call), 3)
+  expect_equal(func_call$is_aes, c(FALSE, FALSE, TRUE))
+  expect_equal(func_call$argument_name, c("color", "size", ""))
 }
 )
 
