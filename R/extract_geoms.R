@@ -69,8 +69,8 @@ find_geom_calls_in_parsed_code <- function(expr, geom_names) {
       }
     } else if (is.list(e) || is.expression(e)) {
       # Recursively search within list/expression
-      for (item in e) {
-        find_calls_recursive(item)
+      for (i in seq_along(e)) {
+        find_calls_recursive(e[[i]])
       }
     }
   }
