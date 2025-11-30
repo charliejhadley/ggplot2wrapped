@@ -12,7 +12,7 @@ na_df <- tibble::tibble(
 
 test_that("get_geoms_from_code_file works with file containing geoms", {
   result <- get_geoms_from_code_file(
-    testthat::test_path("dummy_breaking-code.R"),
+    testthat::test_path("dummy_breaking_code.R"),
     data_geoms
   )
 
