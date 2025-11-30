@@ -79,7 +79,7 @@ This report was built using the [{ggplot2wrapped}](https://charliejhadley.github
 \
 
 <!---- START: geom icon grid ---->
-::::: {style="--cr-narrative-font-size:var(--size-large);--cr-narrative-sidebar-width: 2fr;--cr-section-background-color:#F9F7F1"}
+::::: {style="--cr-narrative-font-size:var(--size-large);--cr-narrative-sidebar-width: 2fr;--cr-section-background-color:white"}
 ::::{.cr-section layout="sidebar-right"}
 
 
@@ -102,6 +102,7 @@ ggplot2wrapped::make_geom_icon_usage_grid(data_geom_usage, show_which_geoms = "u
 @cr-all-geom-icons
 
 GOT TO PLOT THEM ALL!
+`{r} list.files()`
 
 ```{r}
 #| include: false
@@ -241,35 +242,35 @@ highcharter::highchart() |>
 ```{r}
 #| fig-width: 6
 #| fig.height: 6
+# make_geom_usage_pies_highcharts(data_summary_geom_calls, )
 
-
-highcharter::highchart() |> 
+highcharter::highchart() |>
   highcharter::hc_add_series(
-    data_used_across_files_top_n, 
+    data_used_across_files_top_n,
     "pie",
     highcharter::hcaes(
       x = geom_name,
       y = used_in_n_files
       ),
-    center = c(50, 50), 
+    center = c(50, 50),
                 innerSize="50%",
                 dataLabels = list(distance = 18,
                                   format = '<b>{point.name}</b>:<br>Used in {point.y} files<br>({point.percentage:.0f} %)',
-                                  style = list(fontSize = 16))) |> 
-  highcharter::hc_colors(vec_colours_pie) |> 
+                                  style = list(fontSize = 16))) |>
+  highcharter::hc_colors(vec_colours_pie) |>
   highcharter::hc_plotOptions(
-    innersize="50%", 
-    startAngle=90, 
+    innersize="50%",
+    startAngle=90,
     endAngle=90,
     center=list('50%', '75%'),
     size='110%'
     # width = "300px"
-    ) |> 
+    ) |>
   highcharter::hc_title(text = '# of files geom<br>occured in',
-        verticalAlign = 'middle', 
-        align = 'center', 
+        verticalAlign = 'middle',
+        align = 'center',
         style = list(fontSize = 24),
-        y = 0, 
+        y = 0,
         floating = TRUE
         )
 ```

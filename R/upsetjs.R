@@ -1,6 +1,14 @@
-#' Get file info
+#' Interactive UpSet chart
 #'
-#' `summarise_per_day()` utility function
+#' `make_geom_interactive_upset_chart()` visualisation function for creating an
+#' interactive UpSet chart showing which visualisations are used together in
+#' code files. Uses the {htmlwidgets} package {upsetjs}.
+#'
+#' @param data_geom_usage tibble containing geom usage data produced via
+#' `add_geom_usage_to_files()`.
+#' @param height height of htmlwidget in pixels
+#' @param min_geom_appearances minimum number of times geom needs to
+#' @returns A tibble.
 #'
 #' @export
 make_geom_interactive_upset_chart <- function(data_geom_usage, height = NULL, min_geom_appearances = 10, min_interaction_size = 1){
@@ -16,8 +24,8 @@ make_geom_interactive_upset_chart <- function(data_geom_usage, height = NULL, mi
     dplyr::select(starts_with("geom")) |>
     dplyr::mutate(dplyr::across(dplyr::everything(), ~ dplyr::if_else(is.na(.x), 0, 1)))
 
-  # I found a bug in tidyr::unite() so this is horrible.
-
+  # Note: tidyr::unite() has a fun bug which means this lower dependency solution
+  # is better
   data_wide_upset_js <- data_wide_upset_js |>
     dplyr::mutate(interaction = paste0(colnames(data_wide_upset_js), collapse = "_"), .before = 1)
 
@@ -35,9 +43,13 @@ make_geom_interactive_upset_chart <- function(data_geom_usage, height = NULL, mi
 }
 
 
-#' Get file info
+#' Interactive Venn Diagram
 #'
-#' `summarise_per_day()` utility function
+#' `make_geom_interactive_venn_diagram()` visualisation function for creating an
+#' interactive Venn Diagram of top 3 most used geoms.
+#'
+#' @param data_geom_usage tibble containing geom usage data produced via
+#' `add_geom_usage_to_files()`.
 #'
 #' @export
 make_geom_interactive_venn_diagram <- function(data_geom_usage){

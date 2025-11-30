@@ -2,21 +2,23 @@
 % Please edit documentation in R/ggplot2-charts.R
 \name{make_geom_icon_usage_grid}
 \alias{make_geom_icon_usage_grid}
-\title{Get file info}
+\title{Grid of geom groupings and their usage}
 \usage{
-make_geom_icon_usage_grid(data_geom_usage, show_which_geoms = c("used", "all"))
+make_geom_icon_usage_grid(data_geom_usage, show_which_geoms = "used")
 }
 \arguments{
-\item{paths}{A singular path or a vector of file paths to look in for code
-files}
+\item{data_geom_usage}{Tibble containing geom usage data produced via
+\code{add_geom_usage_to_files()}.}
 
-\item{file_types}{Which R code files to look at. Defaults to R, Quarto and
+\item{show_which_geoms}{Which geoms are shown? Default is "used" which
+highlights only used geoms. Providing "all" will show all geoms.
 RMarkdown.}
 }
 \value{
-A tibble.
+A ggplot2 chart
 }
 \description{
-\code{get_code_file_info()} provides a formatted tibble containg file info about
-your selected code files.
+\code{make_geom_icon_usage_grid()} creates a ggplot2 with a grid of geom groupings
+from the official {ggplot2} charts, optionally highlighting which geoms are
+used.
 }

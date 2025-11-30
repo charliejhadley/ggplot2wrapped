@@ -48,12 +48,6 @@ data_geoms_detailed <- data_geoms_basic |>
 
 data_geoms <- data_geoms_detailed
 
-data_geoms |>
-  filter(package_name == "ggplot2") |>
-  arrange(geom_name) |>
-  select(geom_name) |>
-  write_csv("data-raw/geom_groupings.csv")
-
 usethis::use_data(data_geoms, overwrite = TRUE)
 
 
@@ -64,7 +58,7 @@ library("ggplot2wrapped")
 code_files <- get_code_file_info(c("~/Github/", "~/coding/r-projects-scrapbook/"), file_type = c(".qmd", ".R", ".Rmd"))
 
 
-data_geom_usage_all_files <- code_files |>
+ code_files |>
   add_geom_usage_to_files()
 
 

@@ -1,17 +1,28 @@
-#' Get file info
+#' Grid of geom groupings and their usage
 #'
-#' `get_code_file_info()` provides a formatted tibble containg file info about
-#' your selected code files.
+#' `make_geom_icon_usage_grid()` creates a ggplot2 with a grid of geom groupings
+#' from the official {ggplot2} charts, optionally highlighting which geoms are
+#' used.
 #'
-#' @param paths A singular path or a vector of file paths to look in for code
-#' files
-#' @param file_types Which R code files to look at. Defaults to R, Quarto and
+#' @param data_geom_usage Tibble containing geom usage data produced via
+#' `add_geom_usage_to_files()`.
+#' @param show_which_geoms Which geoms are shown? Default is "used" which
+#' highlights only used geoms. Providing "all" will show all geoms.
 #' RMarkdown.
-#' @returns A tibble.
+#' @returns A ggplot2 chart
 #' @export
-make_geom_icon_usage_grid <- function(data_geom_usage, show_which_geoms = c("used", "all")){
+make_geom_icon_usage_grid <- function(data_geom_usage, show_which_geoms = "used"){
 
-  data_geom_groupings <- read.csv(system.file("data", "geom_groupings.csv", package = "ggplot2wrapped"))
+  if (!(show_which_geoms %in% c("used", "all"))) {
+    cli::cli_abort(
+      c("x" = "Invalid value for {.arg show_which_geoms}.",
+        "i" = "You provided: {.val {show_which_geoms}}",
+        "v" = "Permitted values are: {.val usage} or {.val all}"
+      )
+    )
+  }
+
+  data_geom_groupings <- read.csv(system.file("geom_groupings.csv", package = "ggplot2wrapped"))
 
   icon_file_paths <- list.files(system.file("icons-ggplot2", package = "ggplot2wrapped"),
                                 full.names = TRUE)
@@ -51,7 +62,8 @@ make_geom_icon_usage_grid <- function(data_geom_usage, show_which_geoms = c("use
         size = 0.09
       ) +
       ggplot2::coord_equal() +
-      ggplot2::theme_void(paper = GPCDStools::cols_gpcds$neutral)
+      # ggplot2::theme_void(paper = GPCDStools::cols_gpcds$neutral)
+      ggplot2::theme_void(paper = "white")
 
   }
 
@@ -67,7 +79,8 @@ make_geom_icon_usage_grid <- function(data_geom_usage, show_which_geoms = c("use
         size = 0.09
       ) +
       ggplot2::coord_equal() +
-      ggplot2::theme_void(paper = GPCDStools::cols_gpcds$neutral)
+      # ggplot2::theme_void(paper = GPCDStools::cols_gpcds$neutral)
+      ggplot2::theme_void(paper = "white")
 
   }
 
@@ -126,118 +139,37 @@ geom_rtile <- function(mapping = NULL, data = NULL,
   )
 }
 
-#' Get file info
+
+#' geom usage calendar
 #'
-#' `fill_geom_usage_date_data()` utility function
+#' `make_geom_usage_calendar()` generates a ggplot2 chart showing which geoms
+#' are used when, it is inspired by the GitHub commit chart.
 #'
-#' @export
-fill_geom_usage_date_data <- function(data_usage_per_day, target_year = 2025){
-
-    data_usage_per_day |>
-      tidyr::complete(modified_date = seq(lubridate::ymd(paste0(target_year, "-01-01")), lubridate::ymd(paste0(target_year, "-12-31")), by = "day"), fill = list(n_times_used = NA)) |>
-    dplyr::mutate(
-      n_week = lubridate::week(modified_date),
-      n_day = lubridate::wday(modified_date, week_start = 7),
-      weekday_label = lubridate::wday(modified_date, week_start = 7, label = TRUE, abbr = TRUE),
-      weekday_label = forcats::fct_rev(weekday_label),
-      month = lubridate::month(modified_date, label = TRUE, abbr = TRUE),
-      month_name = lubridate::month(modified_date, label = TRUE, abbr = FALSE),
-      is_workday = dplyr::if_else(weekday_label %in% c("Sat", "Sun"), FALSE, TRUE)
-    )
-
-
-}
-#' Get file info
+#' @section Where does this visualisation come from?
 #'
-#' `fill_geom_usage_date_data_with_nesting()` share doc page
+#' This is intended to look like the GitHub commit chart and the code is largely
+#' based on https://restateinsight.com/posts/general-posts/2024-12-github-contributions-plot/
 #'
-#' @export
-fill_geom_usage_date_data_with_nesting <- function(data_usage_per_day, nesting_column = NULL, target_year = 2025){
-
-
-  nesting_column <- dplyr::ensym(nesting_column)
-
-  data_usage_per_day |>
-      tidyr::complete(tidyr::nesting(!!dplyr::ensym(nesting_column)), modified_date = seq(lubridate::ymd(paste0(target_year, "-01-01")), lubridate::ymd(paste0(target_year, "-12-31")), by = "day"), fill = list(n_times_used = NA)) |>
-    dplyr::mutate(
-      n_week = lubridate::week(modified_date),
-      n_day = lubridate::wday(modified_date, week_start = 7),
-      weekday_label = lubridate::wday(modified_date, week_start = 7, label = TRUE, abbr = TRUE),
-      weekday_label = forcats::fct_rev(weekday_label),
-      month = lubridate::month(modified_date, label = TRUE, abbr = TRUE),
-      is_workday = dplyr::if_else(weekday_label %in% c("Sat", "Sun"), FALSE, TRUE)
-    )
-
-
-}
-
-#' Get file info
-#'
-#' `summarise_per_day()` utility function
-#'
-#' @export
-summarise_per_day <- function(data_geom_usage, measure = c("per_day_individual_geom_usage",
-                                                           "per_day_files_with_geoms",
-                                                           "per_day_unique_geoms",
-                                                           "per_day_total_geom_usage")){
-
-  # TODO: Use tidyeval
-  data_summarised_per_day <- switch (measure,
-                                     "per_day_individual_geom_usage" = data_geom_usage |>
-                                       dplyr::mutate(modified_date = lubridate::as_date(modified_time)) |>
-                                       dplyr::select(geom_name, modified_date, n_times_used) |>
-                                       dplyr::summarise(calendar_measure = sum(n_times_used), .by = c(geom_name, modified_date)),
-
-
-          "per_day_files_with_geoms" = data_geom_usage |>
-            dplyr::mutate(modified_date = lubridate::as_date(modified_time)) |>
-            dplyr::select(file_path, modified_date) |>
-            dplyr::summarise(calendar_measure = dplyr::n(), .by = c(file_path, modified_date)),
-
-          "per_day_unique_geoms" = data_geom_usage |>
-            dplyr::mutate(modified_date = lubridate::as_date(modified_time)) |>
-            dplyr::select(geom_name, modified_date) |>
-            dplyr::summarise(calendar_measure = dplyr::n_distinct(geom_name), .by = modified_date),
-
-          "per_day_total_geom_usage" = data_geom_usage |>
-            dplyr::mutate(modified_date = lubridate::as_date(modified_time)) |>
-            dplyr::select(geom_name, modified_date, n_times_used) |>
-            dplyr::summarise(calendar_measure = sum(n_times_used), .by = c(modified_date))
-  )
-
-  data_summarised_per_day
-
-}
-
-#' Get file info
-#'
-#' `summarise_per_day()` utility function
-#'
-#' @export
-summarise_per_file <- function(data_geom_usage){
-
-  data_geom_usage |>
-    distinct(file_path, geom_name) |>
-    summarise(geoms = list(geom_name), .by = file_path)
-
-}
-
-
-#' Get file info
-#'
-#' `make_geom_usage_calendar()` provides a formatted tibble containg file info about
-#' your selected code files. Heavily copied from https://restateinsight.com/posts/general-posts/2024-12-github-contributions-plot/
-#'
-#' @param paths A singular path or a vector of file paths to look in for code
+#' @param data_geom_usage Tibble containing geom usage data produced via
+#' `add_geom_usage_to_files()`.
 #' files
-#' @param file_types Which R code files to look at. Defaults to R, Quarto and
-#' RMarkdown.
+#' @param measure How should geom use be summarised? Defaults to "per_day_individual_geom_usage",
+#' can also be; "per_day_files_with_geoms", "per_day_unique_geoms", "per_day_total_geom_usage"
 #' @returns A tibble.
 #' @export
-make_geom_usage_calendar <- function(data_geom_usage, measure = c("per_day_individual_geom_usage",
-                                                               "per_day_files_with_geoms",
-                                                               "per_day_unique_geoms",
-                                                               "per_day_total_geom_usage")){
+make_geom_usage_calendar <- function(data_geom_usage, measure = "per_day_individual_geom_usage"){
+
+  if (!(measure %in% c("per_day_individual_geom_usage",
+                       "per_day_files_with_geoms",
+                       "per_day_unique_geoms",
+                       "per_day_total_geom_usage"))) {
+    cli::cli_abort(
+      c("x" = "Invalid value for {.arg measure}.",
+        "i" = "You provided: {.val {measure}}",
+        "v" = "Permitted values are: {.val per_day_individual_geom_usage}, {.val per_day_files_with_geoms}, {.val per_day_unique_geoms}, {.val per_day_total_geom_usage}"
+      )
+    )
+  }
 
 
   data_per_day_individual_geom_usage <- data_geom_usage |>
@@ -282,7 +214,7 @@ make_geom_usage_calendar <- function(data_geom_usage, measure = c("per_day_indiv
       ggplot2::aes(n_week, weekday_label) +
       geom_rtile(
         ggplot2::aes(fill = calendar_measure),
-        color = "white",
+        color = "blue",
         radius = ggplot2::unit(2, "pt"),
         width = 0.9,
         height = 0.9
@@ -326,7 +258,7 @@ make_geom_usage_calendar <- function(data_geom_usage, measure = c("per_day_indiv
       ggplot2::aes(n_week, weekday_label) +
       geom_rtile(
         ggplot2::aes(fill = calendar_measure),
-        color = "white",
+        color = "blue",
         radius = ggplot2::unit(2, "pt"),
         width = 0.9,
         height = 0.9
@@ -360,11 +292,7 @@ make_geom_usage_calendar <- function(data_geom_usage, measure = c("per_day_indiv
 
 }
 
-#' Get file info
-#'
-#' `summarise_per_day()` utility function
-#'
-#' @export
+# Under developed, sorry
 make_geom_upset_chart <- function(data_geom_usage, focus = c("geom", "date")){
 
 

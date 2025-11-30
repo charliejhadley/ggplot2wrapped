@@ -2,21 +2,18 @@
 % Please edit documentation in R/highcharter.R
 \name{make_aes_type_percentile_highcharts}
 \alias{make_aes_type_percentile_highcharts}
-\title{Get file info}
+\title{Interactive aes usaege chart}
 \usage{
 make_aes_type_percentile_highcharts(data_geom_usage)
 }
 \arguments{
-\item{paths}{A singular path or a vector of file paths to look in for code
-files}
-
-\item{file_types}{Which R code files to look at. Defaults to R, Quarto and
-RMarkdown.}
+\item{data_geom_usage}{Tibble containing geom usage data produced via
+\code{add_geom_usage_to_files()}.}
 }
 \value{
-A tibble.
+A ggplot2 chart
 }
 \description{
-\code{get_code_file_info()} provides a formatted tibble containg file info about
-your selected code files.
+\code{make_aes_type_percentile_highcharts()} interactive bar chart showing geoms
+that use both dataviz-level and chart-level aesthetics and their relative \%
 }

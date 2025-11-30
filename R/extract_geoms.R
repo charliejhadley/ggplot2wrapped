@@ -85,11 +85,11 @@ get_geoms_from_code_file <- function(file_path, geoms_dataset){
     tidyr::unnest(geom_function_calls) |>
     dplyr::mutate(function_call = extract_geom_arguments(geom_function_calls)) |>
     dplyr::mutate(length_of_call = stringr::str_length(stringr::str_remove(geom_function_calls, geom_name)) - 2) |>
-    dplyr::mutate(n_args_in_call = map_dbl(function_call, nrow)) |>
-    dplyr::mutate(has_aes = map_lgl(function_call, ~any(.x[["is_aes"]])), .after = geom_name) |>
+    dplyr::mutate(n_args_in_call = purrr::map_dbl(function_call, nrow)) |>
+    dplyr::mutate(has_aes = purrr::map_lgl(function_call, ~any(.x[["is_aes"]])), .after = geom_name) |>
     dplyr::select(-geom_function_calls) |>
     dplyr::mutate(n_times_used = dplyr::n(), .by = geom_name) |>
-    dplyr::left_join(select(geoms_dataset, geom_name, package_name),
+    dplyr::left_join(dplyr::select(geoms_dataset, geom_name, package_name),
               by = c("geom_name"))
 
   ## Create single row tibble if no geoms found
@@ -135,7 +135,7 @@ extract_geom_arguments <- function(geom_call){
   raw_args_df <- args_list |>
     tibble::enframe(name = "argument_name",
             value = "argument_value") |>
-    dplyr::mutate(argument_number = row_number()) |>
+    dplyr::mutate(argument_number = dplyr::row_number()) |>
     dplyr::mutate(argument_value = as.character(argument_value),
            argument_name = as.character(argument_name))
 

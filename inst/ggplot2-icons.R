@@ -2,6 +2,7 @@ library(grid)
 library(maps)
 library(ggplot2)
 library(GPCDStools)
+library(tidyverse)
 
 set.seed(1014)
 
@@ -16,7 +17,8 @@ write_icon <- function(name, code) {
   invisible()
 }
 
-icon_bg_colour <- cols_gpcds$neutral
+# icon_bg_colour <- cols_gpcds$neutral
+icon_bg_colour <- "white"
 icon_line_colour <- cols_gpcds$story_tertiary_lighter
 icon_fill_colour <- cols_gpcds$story_tertiary_lighter
 icon_line_width <- 10
@@ -312,7 +314,7 @@ write_icon("geom_function", {
 })
 
 write_icon("geom_sf", {
-  nz <- data.frame(map("nz", plot = FALSE)[c("x", "y")])
+  nz <- data.frame(maps::map("nz", plot = FALSE)[c("x", "y")])
   nz$x <- nz$x - min(nz$x, na.rm = TRUE)
   nz$y <- nz$y - min(nz$y, na.rm = TRUE)
   nz <- nz / max(nz, na.rm = TRUE)

@@ -2,7 +2,7 @@
 % Please edit documentation in R/upsetjs.R
 \name{make_geom_interactive_upset_chart}
 \alias{make_geom_interactive_upset_chart}
-\title{Get file info}
+\title{Interactive UpSet chart}
 \usage{
 make_geom_interactive_upset_chart(
   data_geom_usage,
@@ -11,6 +11,19 @@ make_geom_interactive_upset_chart(
   min_interaction_size = 1
 )
 }
+\arguments{
+\item{data_geom_usage}{tibble containing geom usage data produced via
+\code{add_geom_usage_to_files()}.}
+
+\item{height}{height of htmlwidget in pixels}
+
+\item{min_geom_appearances}{minimum number of times geom needs to}
+}
+\value{
+A tibble.
+}
 \description{
-\code{summarise_per_day()} utility function
+\code{make_geom_interactive_upset_chart()} visualisation function for creating an
+interactive UpSet chart showing which visualisations are used together in
+code files. Uses the {htmlwidgets} package {upsetjs}.
 }

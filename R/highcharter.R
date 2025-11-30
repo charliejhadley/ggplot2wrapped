@@ -1,13 +1,12 @@
-#' Get file info
+#' Interactive aes usaege chart
 #'
-#' `get_code_file_info()` provides a formatted tibble containg file info about
-#' your selected code files.
+#' `make_aes_type_percentile_highcharts()` interactive bar chart showing geoms
+#' that use both dataviz-level and chart-level aesthetics and their relative %
 #'
-#' @param paths A singular path or a vector of file paths to look in for code
-#' files
-#' @param file_types Which R code files to look at. Defaults to R, Quarto and
-#' RMarkdown.
-#' @returns A tibble.
+#' @param data_geom_usage Tibble containing geom usage data produced via
+#' `add_geom_usage_to_files()`.
+#'
+#' @returns A ggplot2 chart
 #' @export
 make_aes_type_percentile_highcharts <- function(data_geom_usage){
 
@@ -47,3 +46,109 @@ make_aes_type_percentile_highcharts <- function(data_geom_usage){
 
 
 }
+
+#' Interactive pie chart of geom usage
+#'
+#' `make_geom_usage_pies_highcharts()` produces an interactive pie chart showing
+#' your top 4 geom usage across all calls or files
+#'
+#' @param data_geom_usage Tibble containing geom usage data produced via
+#' `add_geom_usage_to_files()`.
+#' @param pie_measure_type How should pie chart summarise geom used? Default to
+#' "geom_total_usage", can also be "geom_usage_in_files"
+#'
+#' @returns A ggplot2 chart.
+#' @export
+make_geom_usage_pies_highcharts <- function(data_summary_geom_calls, pie_measure_type = c("geom_total_usage", "geom_usage_in_files")){
+
+  if (!(pie_measure_type %in% c("geom_total_usage", "geom_usage_in_files"))) {
+    cli::cli_abort(
+      c("x" = "Invalid value for {.arg pie_measure_type}.",
+        "i" = "You provided: {.val {pie_measure_type}}",
+        "v" = "Permitted values are: {.val geom_total_usage} or {.val geom_usage_in_files}"
+      )
+    )
+  }
+
+  vec_colours_pie <- GPCDStools::colours_gpcds |>
+  dplyr::filter(type == "tertiary_lighter") |>
+  dplyr::slice(1:4) |>
+  dplyr::pull(hex_code) |>
+  c(GPCDStools::cols_gpcds$grey_mid)
+
+  data_summary_geom_calls |>
+    dplyr::arrange(dplyr::desc(total_times_used)) |>
+    dplyr::mutate(geom_name = dplyr::if_else(dplyr::row_number() <= 4, geom_name, "All other geoms")) |>
+    dplyr::summarise(total_times_used = sum(total_times_used), .by = geom_name)
+
+  hc_pie_chart <- switch(pie_measure_type,
+         "geom_total_usage" = {
+           highcharter::highchart() |>
+             highcharter::hc_add_series(
+               data_total_times_used_top_n,
+               "pie",
+               highcharter::hcaes(
+                 x = geom_name,
+                 y = total_times_used
+               ),
+               center = c(50, 50),
+               innerSize="50%",
+               dataLabels = list(distance = 18,
+                                 format = '<b>{point.name}</b>:<br>Used {point.y} times<br>({point.percentage:.0f} %)',
+                                 style = list(fontSize = 16))) |>
+             highcharter::hc_colors(vec_colours_pie) |>
+             highcharter::hc_plotOptions(
+               innersize="50%",
+               startAngle=90,
+               endAngle=90,
+               center=list('50%', '75%'),
+               size='110%'
+               # width = "300px"
+             ) |>
+             highcharter::hc_title(text = 'Total times<br>geom used',
+                                   verticalAlign = 'middle',
+                                   align = 'center',
+                                   style = list(fontSize = 24),
+                                   y = 0,
+                                   floating = TRUE
+             )
+         },
+         "geom_usage_in_files" = {
+           highcharter::highchart() |>
+             highcharter::hc_add_series(
+               data_used_across_files_top_n,
+               "pie",
+               highcharter::hcaes(
+                 x = geom_name,
+                 y = used_in_n_files
+               ),
+               center = c(50, 50),
+               innerSize="50%",
+               dataLabels = list(distance = 18,
+                                 format = '<b>{point.name}</b>:<br>Used in {point.y} files<br>({point.percentage:.0f} %)',
+                                 style = list(fontSize = 16))) |>
+             highcharter::hc_colors(vec_colours_pie) |>
+             highcharter::hc_plotOptions(
+               innersize="50%",
+               startAngle=90,
+               endAngle=90,
+               center=list('50%', '75%'),
+               size='110%'
+               # width = "300px"
+             ) |>
+             highcharter::hc_title(text = '# of files geom<br>occured in',
+                                   verticalAlign = 'middle',
+                                   align = 'center',
+                                   style = list(fontSize = 24),
+                                   y = 0,
+                                   floating = TRUE
+             )
+         })
+
+
+  hc_pie_chart
+
+
+}
+
+

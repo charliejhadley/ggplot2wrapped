@@ -2,25 +2,25 @@
 % Please edit documentation in R/ggplot2-charts.R
 \name{make_geom_usage_calendar}
 \alias{make_geom_usage_calendar}
-\title{Get file info}
+\title{geom usage calendar}
 \usage{
 make_geom_usage_calendar(
   data_geom_usage,
-  measure = c("per_day_individual_geom_usage", "per_day_files_with_geoms",
-    "per_day_unique_geoms", "per_day_total_geom_usage")
+  measure = "per_day_individual_geom_usage"
 )
 }
 \arguments{
-\item{paths}{A singular path or a vector of file paths to look in for code
+\item{data_geom_usage}{Tibble containing geom usage data produced via
+\code{add_geom_usage_to_files()}.
 files}
 
-\item{file_types}{Which R code files to look at. Defaults to R, Quarto and
-RMarkdown.}
+\item{measure}{How should geom use be summarised? Defaults to "per_day_individual_geom_usage",
+can also be; "per_day_files_with_geoms", "per_day_unique_geoms", "per_day_total_geom_usage"}
 }
 \value{
 A tibble.
 }
 \description{
-\code{make_geom_usage_calendar()} provides a formatted tibble containg file info about
-your selected code files. Heavily copied from https://restateinsight.com/posts/general-posts/2024-12-github-contributions-plot/
+\code{make_geom_usage_calendar()} generates a ggplot2 chart showing which geoms
+are used when, it is inspired by the GitHub commit chart.
 }

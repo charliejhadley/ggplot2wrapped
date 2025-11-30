@@ -2,10 +2,15 @@
 % Please edit documentation in R/upsetjs.R
 \name{make_geom_interactive_venn_diagram}
 \alias{make_geom_interactive_venn_diagram}
-\title{Get file info}
+\title{Interactive Venn Diagram}
 \usage{
 make_geom_interactive_venn_diagram(data_geom_usage)
 }
+\arguments{
+\item{data_geom_usage}{tibble containing geom usage data produced via
+\code{add_geom_usage_to_files()}.}
+}
 \description{
-\code{summarise_per_day()} utility function
+\code{make_geom_interactive_venn_diagram()} visualisation function for creating an
+interactive Venn Diagram of top 3 most used geoms.
 }
