@@ -123,7 +123,25 @@ get_geoms_from_code_file <- function(file_path, geoms_dataset) {
   get_geoms_from_code_file_singular <- function(file_path) {
     code_file <- read_code_from_file(file_path)
 
-    parsed_code <- parse(text = code_file)
+    # Try to parse the code - if it fails (syntax error), return empty result
+    parsed_code <- tryCatch(
+      parse(text = code_file),
+      error = function(e) NULL
+    )
+
+    # If parsing failed, return empty result
+    if (is.null(parsed_code)) {
+      empty_result <- tibble::tibble(
+        geom_name = character(0),
+        has_aes = logical(0),
+        function_call = list(),
+        length_of_call = numeric(0),
+        n_args_in_call = numeric(0),
+        n_times_used = integer(0),
+        package_name = character(0)
+      )
+      return(dplyr::add_row(empty_result))
+    }
 
     # Get list of geom names to search for
     vec_geoms <- dplyr::pull(geoms_dataset, geom_name)
