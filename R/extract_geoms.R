@@ -39,6 +39,57 @@ read_code_from_file <- function(file_path) {
   }
 }
 
+#' Find geom calls via pattern matching
+#'
+#' Fallback function to find geom usage via string pattern matching
+#' when code cannot be parsed due to syntax errors
+#'
+#' @param code_text Character string containing the code
+#' @param geom_names Character vector of geom names to search for
+#' @param geoms_dataset The geoms dataset for package info
+#' @returns A tibble with geom usage info (limited detail since parsing failed)
+#' @keywords internal
+find_geoms_by_pattern <- function(code_text, geom_names, geoms_dataset) {
+  # Search for each geom name followed by opening parenthesis
+  found_geoms <- character(0)
+
+  for (geom in geom_names) {
+    # Pattern: geom name followed by optional whitespace and (
+    pattern <- paste0(geom, "\\s*\\(")
+    if (stringr::str_detect(code_text, pattern)) {
+      found_geoms <- c(found_geoms, geom)
+    }
+  }
+
+  if (length(found_geoms) == 0) {
+    # No geoms found, return empty result
+    empty_result <- tibble::tibble(
+      geom_name = character(0),
+      has_aes = logical(0),
+      function_call = list(),
+      length_of_call = numeric(0),
+      n_args_in_call = numeric(0),
+      n_times_used = integer(0),
+      package_name = character(0)
+    )
+    return(dplyr::add_row(empty_result))
+  }
+
+  # Create result with limited info (can't extract full details from unparseable code)
+  tibble::tibble(geom_name = found_geoms) |>
+    dplyr::mutate(
+      has_aes = NA,
+      function_call = list(NULL),
+      length_of_call = NA_real_,
+      n_args_in_call = NA_real_,
+      n_times_used = 1L
+    ) |>
+    dplyr::left_join(
+      dplyr::select(geoms_dataset, geom_name, package_name),
+      by = "geom_name"
+    )
+}
+
 #' Find geom calls
 #'
 #' Helper function to recursively find geom function calls in parsed R code
@@ -123,28 +174,19 @@ get_geoms_from_code_file <- function(file_path, geoms_dataset) {
   get_geoms_from_code_file_singular <- function(file_path) {
     code_file <- read_code_from_file(file_path)
 
-    # Try to parse the code - if it fails (syntax error), return empty result
+    # Get list of geom names to search for
+    vec_geoms <- dplyr::pull(geoms_dataset, geom_name)
+
+    # Try to parse the code - if it fails (syntax error), fall back to pattern matching
     parsed_code <- tryCatch(
       parse(text = code_file),
       error = function(e) NULL
     )
 
-    # If parsing failed, return empty result
+    # If parsing failed, use pattern matching fallback
     if (is.null(parsed_code)) {
-      empty_result <- tibble::tibble(
-        geom_name = character(0),
-        has_aes = logical(0),
-        function_call = list(),
-        length_of_call = numeric(0),
-        n_args_in_call = numeric(0),
-        n_times_used = integer(0),
-        package_name = character(0)
-      )
-      return(dplyr::add_row(empty_result))
+      return(find_geoms_by_pattern(code_file, vec_geoms, geoms_dataset))
     }
-
-    # Get list of geom names to search for
-    vec_geoms <- dplyr::pull(geoms_dataset, geom_name)
 
     geom_calls <- find_geom_calls_in_parsed_code(parsed_code, vec_geoms)
 

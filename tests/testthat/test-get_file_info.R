@@ -49,6 +49,27 @@ test_that("get_geoms_from_code_file works with invalid code", {
 }
 )
 
+test_that("get_geoms_from_code_file detects geoms in invalid code via pattern matching", {
+  result <- get_geoms_from_code_file(
+    testthat::test_path("dummy_invalid_with_geom.R"),
+    data_geoms
+  )
+
+  result_df <- result[[1]]
+
+  # Should detect geom_point even though code has syntax error
+  expect_equal(nrow(result_df), 1)
+  expect_equal(result_df$geom_name, "geom_point")
+  expect_equal(result_df$package_name, "ggplot2")
+
+  # Detailed info should be NA since we couldn't parse the code
+  expect_true(is.na(result_df$has_aes))
+  expect_true(is.na(result_df$length_of_call))
+  expect_true(is.na(result_df$n_args_in_call))
+  expect_equal(result_df$n_times_used, 1L)
+}
+)
+
 
 test_that("get_geoms_from_code_file works with file containing geoms", {
   result <- get_geoms_from_code_file(
