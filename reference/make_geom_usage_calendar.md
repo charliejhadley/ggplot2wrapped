@@ -1,28 +1,31 @@
-# Get file info
+# geom usage calendar
 
-`make_geom_usage_calendar()` provides a formatted tibble containg file
-info about your selected code files. Heavily copied from
-https://restateinsight.com/posts/general-posts/2024-12-github-contributions-plot/
+`make_geom_usage_calendar()` generates a ggplot2 chart showing which
+geoms are used when, it is inspired by the GitHub commit chart.
 
 ## Usage
 
 ``` r
 make_geom_usage_calendar(
   data_geom_usage,
-  measure = c("per_day_individual_geom_usage", "per_day_files_with_geoms",
-    "per_day_unique_geoms", "per_day_total_geom_usage")
+  measure = "per_day_individual_geom_usage"
 )
 ```
 
 ## Arguments
 
-- paths:
+- data_geom_usage:
 
-  A singular path or a vector of file paths to look in for code files
+  Tibble containing geom usage data produced via
+  [`add_geom_usage_to_files()`](https://charliejhadley.github.io/ggplot2wrapped/reference/add_geom_usage_to_files.md).
+  files
 
-- file_types:
+- measure:
 
-  Which R code files to look at. Defaults to R, Quarto and RMarkdown.
+  How should geom use be summarised? Defaults to
+  "per_day_individual_geom_usage", can also be;
+  "per_day_files_with_geoms", "per_day_unique_geoms",
+  "per_day_total_geom_usage"
 
 ## Value
 

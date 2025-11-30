@@ -1,8 +1,8 @@
-# Get file info
+# Interactive aes usaege chart
 
-[`get_code_file_info()`](https://charliejhadley.github.io/ggplot2wrapped/reference/get_code_file_info.md)
-provides a formatted tibble containg file info about your selected code
-files.
+`make_aes_type_percentile_highcharts()` interactive bar chart showing
+geoms that use both dataviz-level and chart-level aesthetics and their
+relative %
 
 ## Usage
 
@@ -12,14 +12,11 @@ make_aes_type_percentile_highcharts(data_geom_usage)
 
 ## Arguments
 
-- paths:
+- data_geom_usage:
 
-  A singular path or a vector of file paths to look in for code files
-
-- file_types:
-
-  Which R code files to look at. Defaults to R, Quarto and RMarkdown.
+  Tibble containing geom usage data produced via
+  [`add_geom_usage_to_files()`](https://charliejhadley.github.io/ggplot2wrapped/reference/add_geom_usage_to_files.md).
 
 ## Value
 
-A tibble.
+A ggplot2 chart

@@ -1,25 +1,27 @@
-# Get file info
+# Grid of geom groupings and their usage
 
-[`get_code_file_info()`](https://charliejhadley.github.io/ggplot2wrapped/reference/get_code_file_info.md)
-provides a formatted tibble containg file info about your selected code
-files.
+`make_geom_icon_usage_grid()` creates a ggplot2 with a grid of geom
+groupings from the official ggplot2 charts, optionally highlighting
+which geoms are used.
 
 ## Usage
 
 ``` r
-make_geom_icon_usage_grid(data_geom_usage, show_which_geoms = c("used", "all"))
+make_geom_icon_usage_grid(data_geom_usage, show_which_geoms = "used")
 ```
 
 ## Arguments
 
-- paths:
+- data_geom_usage:
 
-  A singular path or a vector of file paths to look in for code files
+  Tibble containing geom usage data produced via
+  [`add_geom_usage_to_files()`](https://charliejhadley.github.io/ggplot2wrapped/reference/add_geom_usage_to_files.md).
 
-- file_types:
+- show_which_geoms:
 
-  Which R code files to look at. Defaults to R, Quarto and RMarkdown.
+  Which geoms are shown? Default is "used" which highlights only used
+  geoms. Providing "all" will show all geoms. RMarkdown.
 
 ## Value
 
-A tibble.
+A ggplot2 chart

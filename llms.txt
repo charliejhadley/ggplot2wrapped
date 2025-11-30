@@ -181,9 +181,9 @@ data_example_geom_usage |>
 - [`extract_geom_arguments()`](https://charliejhadley.github.io/ggplot2wrapped/reference/extract_geom_arguments.md)
   : extract_geom_arguments
 - [`fill_geom_usage_date_data()`](https://charliejhadley.github.io/ggplot2wrapped/reference/fill_geom_usage_date_data.md)
-  : Get file info
+  : Fill geom usage per day
 - [`fill_geom_usage_date_data_with_nesting()`](https://charliejhadley.github.io/ggplot2wrapped/reference/fill_geom_usage_date_data_with_nesting.md)
-  : Get file info
+  : Fill geom usage per day with nesting
 - [`get_code_file_info()`](https://charliejhadley.github.io/ggplot2wrapped/reference/get_code_file_info.md)
   : Get file info
 - [`get_docs_details()`](https://charliejhadley.github.io/ggplot2wrapped/reference/get_docs_details.md)
@@ -195,21 +195,21 @@ data_example_geom_usage |>
 - [`ggplot_wrapped_2025()`](https://charliejhadley.github.io/ggplot2wrapped/reference/ggplot_wrapped_2025.md)
   : Get file info
 - [`make_aes_type_percentile_highcharts()`](https://charliejhadley.github.io/ggplot2wrapped/reference/make_aes_type_percentile_highcharts.md)
-  : Get file info
+  : Interactive aes usaege chart
 - [`make_geom_icon_usage_grid()`](https://charliejhadley.github.io/ggplot2wrapped/reference/make_geom_icon_usage_grid.md)
-  : Get file info
+  : Grid of geom groupings and their usage
 - [`make_geom_interactive_upset_chart()`](https://charliejhadley.github.io/ggplot2wrapped/reference/make_geom_interactive_upset_chart.md)
-  : Get file info
+  : Interactive UpSet chart
 - [`make_geom_interactive_venn_diagram()`](https://charliejhadley.github.io/ggplot2wrapped/reference/make_geom_interactive_venn_diagram.md)
-  : Get file info
-- [`make_geom_upset_chart()`](https://charliejhadley.github.io/ggplot2wrapped/reference/make_geom_upset_chart.md)
-  : Get file info
+  : Interactive Venn Diagram
 - [`make_geom_usage_calendar()`](https://charliejhadley.github.io/ggplot2wrapped/reference/make_geom_usage_calendar.md)
-  : Get file info
+  : geom usage calendar
+- [`make_geom_usage_pies_highcharts()`](https://charliejhadley.github.io/ggplot2wrapped/reference/make_geom_usage_pies_highcharts.md)
+  : Interactive pie chart of geom usage
 - [`summarise_per_day()`](https://charliejhadley.github.io/ggplot2wrapped/reference/summarise_per_day.md)
-  : Get file info
+  : Summarise geom usage per day
 - [`summarise_per_file()`](https://charliejhadley.github.io/ggplot2wrapped/reference/summarise_per_file.md)
-  : Get file info
+  : Summarise geom usage per file
 
 # Articles
 
