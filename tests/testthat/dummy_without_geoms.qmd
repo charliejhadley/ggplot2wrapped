@@ -1,0 +1,15 @@
+---
+title: "Quarto No Geoms"
+format: html
+---
+
+# Data Processing
+
+This talks about geom_col but doesn't use it.
+
+```{r}
+library(tidyr)
+cleaned_data <- pivot_longer(mtcars, cols = everything())
+```
+
+Maybe we'll add geom_ribbon later.

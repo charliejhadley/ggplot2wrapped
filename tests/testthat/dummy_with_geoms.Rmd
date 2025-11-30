@@ -1,0 +1,33 @@
+---
+title: "Test Document"
+---
+
+# Introduction
+
+This document talks about geom_point and geom_line but these shouldn't be detected.
+
+```{r setup}
+library(ggplot2)
+```
+
+Here's a simple plot:
+
+```{r plot1}
+ggplot(mtcars) +
+  geom_point(aes(x = mpg, y = hp))
+```
+
+Another section mentions geom_col in the text.
+
+```{r plot2, fig.cap="A plot with geom_line"}
+ggplot(data = iris) +
+  geom_line(aes(x = Sepal.Length, y = Sepal.Width), linewidth = 2) +
+  geom_point(size = 3, color = "red")
+```
+
+The chunk option above has "geom_line" in it but that shouldn't be detected.
+
+```{r}
+# Comment mentioning geom_bar
+geom_smooth(aes(x = a, y = b))
+```
