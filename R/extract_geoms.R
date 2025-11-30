@@ -57,7 +57,7 @@ find_geom_calls_in_parsed_code <- function(expr, geom_names) {
     if (is.call(e)) {
       # Check if this is a function call we're looking for
       func_name <- as.character(e[[1]])
-      if (func_name %in% geom_names) {
+      if (length(func_name) == 1 && func_name %in% geom_names) {
         # Deparse to get the full text of the call
         call_text <- paste(deparse(e), collapse = " ")
         # Add to results
