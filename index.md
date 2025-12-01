@@ -4,6 +4,8 @@
 >
 > [Check out an example ggplot2wrapped report for
 > 2025!](https://charliejhadley.github.io/ggplot2wrapped-2025-example/)
+>
+> ![](reference/figures/example-report.gif)
 
 This package attempts to give you the Spotify Wrapped experience but
 looking at how you use the incredible {gglot2} package for visualising
@@ -24,6 +26,11 @@ Within the package you will find 3 kinds of things:
 > This runs fully local and doesn’t use LLMs. In fact, not only is it
 > LLM free it was also built and designed by hand. Slop free through and
 > through.
+>
+> It provides lots of visualisations and analysis tools for your ggplot2
+> usage!
+
+![](reference/figures/example-visualisations.png)
 
 ## Installation
 
@@ -39,11 +46,9 @@ This should then work:
 remotes::install_github("charliejhadley/ggplot2wrapped")
 ```
 
-If it doesn’t you may have issues with a dependency {highcharter} which
-itself depends on {igraph}.
-
-If you are using R from homebrew that might be the reason as {igraph}
-doesn’t like being built from source.
+This package depends on {astgrepr} at the moment. It’s available on
+CRAN, but if you are on Linux or have other exotic setups you might need
+to faff a little to get the dependency setup.
 
 ## Generating your own report
 
@@ -167,3 +172,5 @@ functions after we release the 2025 wrapped report!
 data_example_geom_usage |> 
   make_geom_interactive_upset_chart(height = 600)
 ```
+
+![](reference/figures/upset-chart.png)

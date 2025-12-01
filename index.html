@@ -70,6 +70,7 @@
 <blockquote>
 <p>Your year in {ggplot2}!</p>
 <p><a href="https://charliejhadley.github.io/ggplot2wrapped-2025-example/">Check out an example ggplot2wrapped report for 2025!</a></p>
+<p><img src="reference/figures/example-report.gif"></p>
 </blockquote>
 <p>This package attempts to give you the Spotify Wrapped experience but looking at how you use the incredible {gglot2} package for visualising your data!</p>
 <p>Within the package you will find 3 kinds of things:</p>
@@ -80,7 +81,9 @@
 </ul>
 <blockquote>
 <p>This runs fully local and doesn’t use LLMs. In fact, not only is it LLM free it was also built and designed by hand. Slop free through and through.</p>
+<p>It provides lots of visualisations and analysis tools for your ggplot2 usage!</p>
 </blockquote>
+<p><img src="reference/figures/example-visualisations.png"></p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
@@ -92,8 +95,7 @@
 <p>This should then work:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"charliejhadley/ggplot2wrapped"</span><span class="op">)</span></span></code></pre></div>
-<p>If it doesn’t you may have issues with a dependency {highcharter} which itself depends on {igraph}.</p>
-<p>If you are using R from homebrew that might be the reason as {igraph} doesn’t like being built from source.</p>
+<p>This package depends on {astgrepr} at the moment. It’s available on CRAN, but if you are on Linux or have other exotic setups you might need to faff a little to get the dependency setup.</p>
 </div>
 <div class="section level2">
 <h2 id="generating-your-own-report">Generating your own report<a class="anchor" aria-label="anchor" href="#generating-your-own-report"></a>
@@ -175,6 +177,7 @@
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">data_example_geom_usage</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="reference/make_geom_interactive_upset_chart.html">make_geom_interactive_upset_chart</a></span><span class="op">(</span>height <span class="op">=</span> <span class="fl">600</span><span class="op">)</span></span></code></pre></div>
+<p><img src="reference/figures/upset-chart.png"></p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
