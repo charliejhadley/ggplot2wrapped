@@ -6,13 +6,15 @@
 #' @export
 add_geom_usage_to_files <- function(data_file_info, data_geoms = ggplot2wrapped::data_geoms){
 
-  data_file_info |>
+  cli::cli_alert_info("Remember this output object contains your actual geom calls therefore it should be considered sensitive. The column with this sensitive information is called `function_call`.", wrap = TRUE)
+
+  data_augmented_with_geom_usage <- data_file_info |>
     dplyr::mutate(geom_usage = get_geoms_from_code_file(file_path, data_geoms)) |>
     tidyr::unnest(geom_usage) |>
     dplyr::filter(!is.na(geom_name)) |>
     dplyr::mutate(file_extension = tools::file_ext(file_path), .after = 1)
 
-  cli::cli_alert_info("Remember this output object contains your actual geom calls therefore it should be considered sensitive. The column with this sensitive information is called `function_call`.", wrap = TRUE)
+  data_augmented_with_geom_usage
 
 }
 
