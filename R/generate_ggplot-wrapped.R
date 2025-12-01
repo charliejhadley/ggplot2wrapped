@@ -23,8 +23,6 @@ ggplot_wrapped_2025 <- function(data_geom_usage,
   data_geom_usage <- data_geom_usage
   data_geom_details <- data_geom_details
 
-  print(data_geom_details)
-
   data_geom_usage |>
     write_csv(file.path(temp_dir, "data_geom_usage.csv"))
 
@@ -34,8 +32,6 @@ ggplot_wrapped_2025 <- function(data_geom_usage,
 #
 #   save(data_geom_usage, file = file.path(temp_dir,"data_geom_usage.RData"))
 #   save(data_geom_details, file = file.path(temp_dir,"data_geom_details.RData"))
-
-  print("JUST HERE")
 
   # quarto::quarto_render(input = system.file("quarto-reports", "ggplot2-unwrapped-2025_scrollytelling","ggplot2-unwrapped-2025_scrollytelling.qmd", package = "ggplot2wrapped"),
   #                       output_file = exported_report_name,
@@ -47,8 +43,8 @@ ggplot_wrapped_2025 <- function(data_geom_usage,
                         execute_dir = temp_dir,
                         execute_params = list(executed_from = "ggplot_wrapped_2025", report_year = report_year))
 
-  print("check")
-  print(file.exists(exported_report_name))
+  # print("check")
+  # print(file.exists(exported_report_name))
 
   quarto_output_file <- system.file("quarto-reports", "ggplot2-unwrapped-2025_scrollytelling", exported_report_name, package = "ggplot2wrapped")
 
