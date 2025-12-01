@@ -56,6 +56,9 @@ This package depends on {astgrepr} at the moment. It’s available on
 CRAN, but if you are on Linux or have other exotic setups you might need
 to faff a little to get the dependency setup.
 
+> Take a minute to [read about bugs in this
+> package](#side-projects-and-bugs).
+
 ## Generating your own report
 
 First you need to collect info about your code files. Modify the first
@@ -179,3 +182,20 @@ data_example_geom_usage |>
 ```
 
 <img src="man/figures/upset-chart.png"/>
+
+## Side projects and bugs
+
+Side projects almost never lead anywhere. I’ve committed to actually
+making something from ideas so when I made the [first commit on Friday
+21st
+Dec](https://github.com/charliejhadley/ggplot2wrapped/commit/956c1cc875e72f62efd8d33d28903510ae8bc3d1)
+I promised myself I’d launch a workable package on December 1st.
+
+And it’s here! But also, there will be bugs. That’s what happens when
+your sprints refuse to look backwards.
+
+![](man/figures/seinfeld-coffee-marathon.gif)
+
+Please report any issues. If the fancy `ggplot_wrapped_2025()` function
+doesn’t work then try out the visualisations or analyse your data
+returned by `add_geom_usage_to_files()`
