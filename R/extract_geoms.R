@@ -12,6 +12,8 @@ add_geom_usage_to_files <- function(data_file_info, data_geoms = ggplot2wrapped:
     dplyr::filter(!is.na(geom_name)) |>
     dplyr::mutate(file_extension = tools::file_ext(file_path), .after = 1)
 
+  cli::cli_alert_info("Remember this output object contains your actual geom calls therefore it should be considered sensitive. The column with this sensitive information is called `function_call`.", wrap = TRUE)
+
 }
 
 
@@ -52,52 +54,52 @@ get_geoms_from_code_file <- function(file_path, geoms_dataset){
   # Vectorisation utility function
   get_geoms_from_code_file_singular <- function(file_path){
 
-  code_file <- paste0(readLines(file_path, warn = FALSE),collapse = "\n")
+    code_file <- paste0(readLines(file_path, warn = FALSE),collapse = "\n")
 
-  root <- code_file |>
-    astgrepr::tree_new() |>
-    astgrepr::tree_root()
+    root <- code_file |>
+      astgrepr::tree_new() |>
+      astgrepr::tree_root()
 
-  vec_geoms <- dplyr::pull(geoms_dataset, geom_name)
-
-
-  geoms_rule_list <- vec_geoms |>
-    purrr::map(~ {
-      # The pattern "geom_name($$$A)" matches the geom call regardless of arguments.
-      pattern_str <- paste0(.x, "($$$A)")
-
-      astgrepr::ast_rule(
-        id = .x,
-        pattern = pattern_str
-      )
-    })
-
-  data_nodes <- do.call(
-    astgrepr::node_find_all,
-    c(list(root), geoms_rule_list)
-  )
+    vec_geoms <- dplyr::pull(geoms_dataset, geom_name)
 
 
-  data_geom_usage <- data_nodes |>
-    astgrepr::node_text_all() |>
-    tibble::enframe(name = "geom_name", value = "geom_function_calls") |>
-    tidyr::unnest(geom_function_calls) |>
-    tidyr::unnest(geom_function_calls) |>
-    dplyr::mutate(function_call = extract_geom_arguments(geom_function_calls)) |>
-    dplyr::mutate(length_of_call = stringr::str_length(stringr::str_remove(geom_function_calls, geom_name)) - 2) |>
-    dplyr::mutate(n_args_in_call = purrr::map_dbl(function_call, nrow)) |>
-    dplyr::mutate(has_aes = purrr::map_lgl(function_call, ~any(.x[["is_aes"]])), .after = geom_name) |>
-    dplyr::select(-geom_function_calls) |>
-    dplyr::mutate(n_times_used = dplyr::n(), .by = geom_name) |>
-    dplyr::left_join(dplyr::select(geoms_dataset, geom_name, package_name),
-              by = c("geom_name"))
+    geoms_rule_list <- vec_geoms |>
+      purrr::map(~ {
+        # The pattern "geom_name($$$A)" matches the geom call regardless of arguments.
+        pattern_str <- paste0(.x, "($$$A)")
 
-  ## Create single row tibble if no geoms found
-  if(nrow(data_geom_usage) == 0){
-    return(dplyr::add_row(data_geom_usage))
-  } else {
-    return(data_geom_usage)
-  }
+        astgrepr::ast_rule(
+          id = .x,
+          pattern = pattern_str
+        )
+      })
+
+    data_nodes <- do.call(
+      astgrepr::node_find_all,
+      c(list(root), geoms_rule_list)
+    )
+
+
+    data_geom_usage <- data_nodes |>
+      astgrepr::node_text_all() |>
+      tibble::enframe(name = "geom_name", value = "geom_function_calls") |>
+      tidyr::unnest(geom_function_calls) |>
+      tidyr::unnest(geom_function_calls) |>
+      dplyr::mutate(function_call = extract_geom_arguments(geom_function_calls)) |>
+      dplyr::mutate(length_of_call = stringr::str_length(stringr::str_remove(geom_function_calls, geom_name)) - 2) |>
+      dplyr::mutate(n_args_in_call = purrr::map_dbl(function_call, nrow)) |>
+      dplyr::mutate(has_aes = purrr::map_lgl(function_call, ~any(.x[["is_aes"]])), .after = geom_name) |>
+      dplyr::select(-geom_function_calls) |>
+      dplyr::mutate(n_times_used = dplyr::n(), .by = geom_name) |>
+      dplyr::left_join(dplyr::select(geoms_dataset, geom_name, package_name),
+                       by = c("geom_name"))
+
+    ## Create single row tibble if no geoms found
+    if(nrow(data_geom_usage) == 0){
+      return(dplyr::add_row(data_geom_usage))
+    } else {
+      return(data_geom_usage)
+    }
 
   }
 
@@ -127,41 +129,41 @@ extract_geom_arguments <- function(geom_call){
   # Vectorize
   extract_geom_arguments_singular <- function(geom_call){
 
-  expr <- parse(text = geom_call)
+    expr <- parse(text = geom_call)
 
-  call_list <- as.list(expr[[1]])
-  args_list <- call_list[-1]
+    call_list <- as.list(expr[[1]])
+    args_list <- call_list[-1]
 
-  raw_args_df <- args_list |>
-    tibble::enframe(name = "argument_name",
-            value = "argument_value") |>
-    dplyr::mutate(argument_number = dplyr::row_number()) |>
-    dplyr::mutate(argument_value = as.character(argument_value),
-           argument_name = as.character(argument_name))
+    raw_args_df <- args_list |>
+      tibble::enframe(name = "argument_name",
+                      value = "argument_value") |>
+      dplyr::mutate(argument_number = dplyr::row_number()) |>
+      dplyr::mutate(argument_value = as.character(argument_value),
+                    argument_name = as.character(argument_name))
 
-  # remove positional arg names
-  raw_args_df <- raw_args_df |>
-    dplyr::mutate(argument_name = dplyr::if_else(stringr::str_detect(argument_name, "^[0-9]{1,}"), "", argument_name))
+    # remove positional arg names
+    raw_args_df <- raw_args_df |>
+      dplyr::mutate(argument_name = dplyr::if_else(stringr::str_detect(argument_name, "^[0-9]{1,}"), "", argument_name))
 
 
-  args_without_aes <- raw_args_df |>
-    dplyr::filter(argument_name != "aes") |>
-    dplyr::filter(!(argument_name == "" &
-           stringr::str_detect(argument_value, "^aes[(]"))) |>
-    dplyr::mutate(is_aes = 0)
+    args_without_aes <- raw_args_df |>
+      dplyr::filter(argument_name != "aes") |>
+      dplyr::filter(!(argument_name == "" &
+                        stringr::str_detect(argument_value, "^aes[(]"))) |>
+      dplyr::mutate(is_aes = 0)
 
-  args_aes <- raw_args_df |>
-    dplyr::filter((argument_name == "" &
-               stringr::str_detect(argument_value, "^aes[(]")) | argument_name == "aes") |>
-    dplyr::mutate(is_aes = 1)
+    args_aes <- raw_args_df |>
+      dplyr::filter((argument_name == "" &
+                       stringr::str_detect(argument_value, "^aes[(]")) | argument_name == "aes") |>
+      dplyr::mutate(is_aes = 1)
 
-  args_all <- dplyr::bind_rows(args_without_aes,
-            args_aes) |>
-    dplyr::mutate(is_aes = as.logical(is_aes)) |>
-    dplyr::select(is_aes, everything())
+    args_all <- dplyr::bind_rows(args_without_aes,
+                                 args_aes) |>
+      dplyr::mutate(is_aes = as.logical(is_aes)) |>
+      dplyr::select(is_aes, everything())
 
-  args_all
-  # tibble(arg_details = args_all, aes_provided = ifelse(nrow(args_aes) > 0, TRUE, FALSE))
+    args_all
+    # tibble(arg_details = args_all, aes_provided = ifelse(nrow(args_aes) > 0, TRUE, FALSE))
 
   }
 
