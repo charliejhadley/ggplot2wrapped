@@ -102,7 +102,6 @@ ggplot2wrapped::make_geom_icon_usage_grid(data_geom_usage, show_which_geoms = "u
 @cr-all-geom-icons
 
 GOT TO PLOT THEM ALL!
-`{r} list.files()`
 
 ```{r}
 #| include: false
@@ -140,8 +139,6 @@ data_summary_geom_calls <- data_geom_usage |>
             times_used_with_aes = sum(ifelse(has_aes, 1, 0)),
             times_used_without_aes = sum(ifelse(!has_aes, 1, 0)))
 ```
-
-# {.page-columns .page-full}
 
 ```{r}
 data_total_times_used <- data_summary_geom_calls |> 
@@ -183,7 +180,22 @@ text_usage_vs_files <- dplyr::if_else(most_used_geom_across_files == most_used_g
                                paste(praise::praise("${Exclamation}!"), "That is surprising! Your most used geom <b>was not</b> the same geom that appear in the most distinct files!"))
 ```
 
-## Shout out to `{r} most_used_geom_total_usage` - your most used geom in 2025!
+::::: {style="--cr-narrative-font-size:var(--size-large);--cr-narrative-sidebar-width: 1fr;--cr-section-background-color:#AA3D4F;"}
+
+::::{.cr-section layout="sidebar-right"}
+
+::: {#cr-look-at-arguments .large-fixed-text}
+<span style='color:#F9F7F1;'>Shout out to `{r} most_used_geom_total_usage`</span>
+:::
+
+@cr-look-at-arguments
+
+[That was your most used geom in 2025! Let's look at your other top geoms!]{.medim-fixed-text style='color:#F9F7F1;'}
+
+::::
+:::::
+
+# {.page-columns .page-full}
 
 `{r} praise::praise("${Exclamation}!")` There are so many different ways to look at how your geoms were used across your `{r} praise::praise("${adjective}")` data visualisations. Maybe the easiest way is a **part-to-whole** story? 
 
