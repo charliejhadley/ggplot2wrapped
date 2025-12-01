@@ -151,9 +151,9 @@ geom_state_secret_custom <- function(){
 }
 ```
 
-We therefore explicitly **white list** geoms to be included in the
-analysis. Earlier there was a defaut argument used that we didn’t
-mention:
+We therefore **explicitly include geoms with an allowlist** to be
+included in the analysis. Earlier there was a default argument used that
+we didn’t mention:
 
 ``` r
 data_geoms_usage_target_year <- code_files_from_target_year |> 
