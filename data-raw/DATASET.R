@@ -72,5 +72,32 @@ data_example_geom_usage <- data_geom_usage_all_files |>
 
 usethis::use_data(data_example_geom_usage, overwrite = TRUE)
 
-save(data_example_geom_usage, file = "inst/quarto/ggplot2wrapped-2025/data_example_geom_usage.RData")
+save(data_example_geom_usage, file = "inst/quarto-reports/ggplot2-unwrapped-2025_scrollytelling/data_example_geom_usage.RData")
+
+# save(data_example_geom_usage, file = system.file("quarto-reports", "ggplot2-unwrapped-2025_scrollytelling","data_example_geom_usage.RData", package = "ggplot2wrapped"))
+
+
+# data_geom_usage_2022 |>
+#   mutate(group = paste("file", cur_group_id()), .by = file_path)
+#
+# data_geom_usage_2022 |>
+#   mutate(file_path = fct_anon(file_path, prefix = "anonymised file "))
+
+
+
+
+
+# data_geom_usage_example <- data_geom_usage_2022 |>
+  # mutate(file_path = fct_anon(file_path, prefix = "anonymised file ")) |>
+  # select(file_path, ends_with("time"), geom_name, has_aes, n_args_in_call, n_times_used, length_of_call, package_name)
+#
+#
+#
+# data_test_scrollytelling <- |>
+#   mutate(geom_usage = get_geoms_from_code_file(file_path, data_geoms))
+#
+# data_test_scrollytelling |>
+#   unnest(geom_usage) |>
+#   filter(!is.na(geom_name)) |>
+#   unnest(function_call)
 
