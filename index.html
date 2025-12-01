@@ -96,6 +96,9 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"charliejhadley/ggplot2wrapped"</span><span class="op">)</span></span></code></pre></div>
 <p>This package depends on {astgrepr} at the moment. It’s available on CRAN, but if you are on Linux or have other exotic setups you might need to faff a little to get the dependency setup.</p>
+<blockquote>
+<p>Take a minute to <a href="#side-projects-and-bugs">read about bugs in this package</a>.</p>
+</blockquote>
 </div>
 <div class="section level2">
 <h2 id="generating-your-own-report">Generating your own report<a class="anchor" aria-label="anchor" href="#generating-your-own-report"></a>
@@ -178,6 +181,14 @@
 <code class="sourceCode R"><span><span class="va">data_example_geom_usage</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="reference/make_geom_interactive_upset_chart.html">make_geom_interactive_upset_chart</a></span><span class="op">(</span>height <span class="op">=</span> <span class="fl">600</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/upset-chart.png"></p>
+</div>
+<div class="section level2">
+<h2 id="side-projects-and-bugs">Side projects and bugs<a class="anchor" aria-label="anchor" href="#side-projects-and-bugs"></a>
+</h2>
+<p>Side projects almost never lead anywhere. I’ve committed to actually making something from ideas so when I made the <a href="https://github.com/charliejhadley/ggplot2wrapped/commit/956c1cc875e72f62efd8d33d28903510ae8bc3d1" class="external-link">first commit on Friday 21st Dec</a> I promised myself I’d launch a workable package on December 1st.</p>
+<p>And it’s here! But also, there will be bugs. That’s what happens when your sprints refuse to look backwards.</p>
+<p><img src="reference/figures/seinfeld-coffee-marathon.gif"></p>
+<p>Please report any issues. If the fancy <code><a href="reference/ggplot_wrapped_2025.html">ggplot_wrapped_2025()</a></code> function doesn’t work then try out the visualisations or analyse your data returned by <code><a href="reference/add_geom_usage_to_files.html">add_geom_usage_to_files()</a></code></p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
