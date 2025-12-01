@@ -43,8 +43,6 @@ ggplot_wrapped_2025 <- function(data_geom_usage,
                         execute_dir = temp_dir,
                         execute_params = list(executed_from = "ggplot_wrapped_2025", report_year = report_year))
 
-  print(file.exists(exported_report_name))
-
   quarto_output_file <- system.file("quarto", "ggplot2wrapped-2025", exported_report_name, package = "ggplot2wrapped")
 
   # # Now copy it to the desired path and delete the original file
