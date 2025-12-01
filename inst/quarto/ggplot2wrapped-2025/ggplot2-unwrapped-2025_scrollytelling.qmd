@@ -8,6 +8,9 @@ format:
     narrative-font-family: Karla
     narrative-text-color-sidebar: "#F9F7F1"
     section-background-color: red;
+    include-in-header: 
+      text: |
+        <script src="https://kit.fontawesome.com/2c8252c536.js" crossorigin="anonymous"></script>
 echo: false
 warning: false
 message: false
@@ -36,7 +39,7 @@ params:
 # library("janitor")
 
 if (params$executed_from == "direct_from_file") {
-  load(system.file("quarto-reports", "ggplot2-unwrapped-2025_scrollytelling","data_example_geom_usage.RData", package = "ggplot2wrapped"))
+  load(system.file("quarto", "ggplot2wrapped-2025","data_example_geom_usage.RData", package = "ggplot2wrapped"))
 
   data_geom_usage <- data_example_geom_usage
   
@@ -50,33 +53,81 @@ if (params$executed_from == "direct_from_file") {
 }
 ```
 
-# {.page-columns .page-full} 
+```{r}
+data_summary_geom_calls <- data_geom_usage |> 
+  dplyr::filter(package_name == "ggplot2") |> 
+  dplyr::group_by(geom_name) |> 
+  dplyr::summarise(used_in_n_files = dplyr::n(),
+            total_times_used = sum(n_times_used),
+            avg_args_used = mean(n_args_in_call),
+            max_args_used = max(n_args_in_call),
+            times_used_with_aes = sum(ifelse(has_aes, 1, 0)),
+            times_used_without_aes = sum(ifelse(!has_aes, 1, 0)))
 
-<span class="report-title">Your year in {ggplot2}!</span>
+data_total_times_used <- data_summary_geom_calls |> 
+  dplyr::slice_max(total_times_used,
+            n = 4)
 
-::: {.grid} 
+data_total_times_used_top_n <- data_summary_geom_calls |> 
+  dplyr::arrange(dplyr::desc(total_times_used)) |> 
+  dplyr::mutate(geom_name = dplyr::if_else(dplyr::row_number() <= 4, geom_name, "All other geoms")) |> 
+  dplyr::summarise(total_times_used = sum(total_times_used), .by = geom_name) |> 
+  dplyr::mutate(geom_name = forcats::fct_reorder(geom_name, total_times_used),
+         geom_name = forcats::fct_rev(geom_name),
+         geom_name = forcats::fct_relevel(geom_name, "All other geoms", after = Inf)) |> 
+  dplyr::mutate(order_id = as.integer(geom_name)) |> 
+  dplyr::arrange(order_id)
 
-::: {.g-col-12 .g-col-md-6}
-Welcome to your year in {ggplot2} this is an interactive look at your favourite visualisation tool (at least in R).
+data_used_across_files_top_n <- data_summary_geom_calls |> 
+  dplyr::arrange(dplyr::desc(used_in_n_files)) |>
+  dplyr::mutate(geom_name = dplyr::if_else(dplyr::row_number() <= 4, geom_name, "All other geoms")) |> 
+  dplyr::summarise(used_in_n_files = sum(used_in_n_files), .by = geom_name) |> 
+  dplyr::mutate(geom_name = forcats::fct_reorder(geom_name, used_in_n_files),
+         geom_name = forcats::fct_rev(geom_name),
+         geom_name = forcats::fct_relevel(geom_name, "All other geoms", after = Inf)) |> 
+  dplyr::mutate(order_id = as.integer(geom_name)) |> 
+  dplyr::arrange(order_id)
 
-This report was built using the [{ggplot2wrapped}](https://charliejhadley.github.io/ggplot2wrapped/) package created by [Charlotte Hadley](https://www.linkedin.com/in/charliejhadley/) from GPCDS. 
+most_used_geom_total_usage <- data_total_times_used_top_n |> 
+  dplyr::filter(geom_name != "All other geoms") |> 
+  dplyr::filter(total_times_used == max(total_times_used)) |> 
+  dplyr::pull(geom_name)
 
-> **Scroll on down** to visualise your visualisation of visualisations!
+most_used_geom_across_files <- data_used_across_files_top_n |> 
+  dplyr::filter(geom_name != "All other geoms") |> 
+  dplyr::filter(used_in_n_files == max(used_in_n_files)) |> 
+  dplyr::pull(geom_name)
 
-:::
+text_usage_vs_files <- dplyr::if_else(most_used_geom_across_files == most_used_geom_total_usage,
+                               paste("No surprises but your most used geom was also the geom that appeared in the most distinct files"),
+                               paste(praise::praise("${Exclamation}!"), "That is surprising! Your most used geom <b>was not</b> the same geom that appear in the most distinct files!"))
+```
 
-::: {.g-col-12 .g-col-md-4}
+
+::::: {style="--cr-narrative-font-size:var(--size-large);--cr-narrative-sidebar-width: 1fr;--cr-section-background-color:#AA3D4F;"}
+
+::::{.cr-section layout="sidebar-right"}
+
+::: {#cr-welcome .large-fixed-text}
+<span style='color:#F9F7F1;'>Welcome to your year in {ggplot2!}</span>
+
 ![](images/logo.png){width="250px"}
+
+> <span style='color:#F9F7F1;'>Interactive report built with love by {ggplot2wrapped} from Charlotte Hadley at GPCDS</span>
 :::
+
+@cr-welcome
+
+[Let it plot!
+<br/>
+Let it chart! 
+<br/>
+Let it dataviz!]{.medim-fixed-text style='color:#F9F7F1;'}
+[<i class="fa-solid fa-arrow-down fa-6x"></i>]{style='color:#F9F7F1;'}
+
 
 ::::
-
-\
-
-::: {.column-screen style="background-image:url(images/gpcds-wide-banner.png); background-size: 100vw; height: 396px; background-position: center +0%; background-repeat: no-repeat;"}
-:::
-
-\
+:::::
 
 <!---- START: geom icon grid ---->
 ::::: {style="--cr-narrative-font-size:var(--size-large);--cr-narrative-sidebar-width: 2fr;--cr-section-background-color:white"}
@@ -128,67 +179,15 @@ Let's look at your top used geoms!
 :::::
 <!---- END: geom icon grid ---->
 
-```{r}
-data_summary_geom_calls <- data_geom_usage |> 
-  dplyr::filter(package_name == "ggplot2") |> 
-  dplyr::group_by(geom_name) |> 
-  dplyr::summarise(used_in_n_files = dplyr::n(),
-            total_times_used = sum(n_times_used),
-            avg_args_used = mean(n_args_in_call),
-            max_args_used = max(n_args_in_call),
-            times_used_with_aes = sum(ifelse(has_aes, 1, 0)),
-            times_used_without_aes = sum(ifelse(!has_aes, 1, 0)))
-```
-
-```{r}
-data_total_times_used <- data_summary_geom_calls |> 
-  dplyr::slice_max(total_times_used,
-            n = 4)
-
-data_total_times_used_top_n <- data_summary_geom_calls |> 
-  dplyr::arrange(dplyr::desc(total_times_used)) |> 
-  dplyr::mutate(geom_name = dplyr::if_else(dplyr::row_number() <= 4, geom_name, "All other geoms")) |> 
-  dplyr::summarise(total_times_used = sum(total_times_used), .by = geom_name) |> 
-  dplyr::mutate(geom_name = forcats::fct_reorder(geom_name, total_times_used),
-         geom_name = forcats::fct_rev(geom_name),
-         geom_name = forcats::fct_relevel(geom_name, "All other geoms", after = Inf)) |> 
-  dplyr::mutate(order_id = as.integer(geom_name)) |> 
-  dplyr::arrange(order_id)
-
-data_used_across_files_top_n <- data_summary_geom_calls |> 
-  dplyr::arrange(dplyr::desc(used_in_n_files)) |>
-  dplyr::mutate(geom_name = dplyr::if_else(dplyr::row_number() <= 4, geom_name, "All other geoms")) |> 
-  dplyr::summarise(used_in_n_files = sum(used_in_n_files), .by = geom_name) |> 
-  dplyr::mutate(geom_name = forcats::fct_reorder(geom_name, used_in_n_files),
-         geom_name = forcats::fct_rev(geom_name),
-         geom_name = forcats::fct_relevel(geom_name, "All other geoms", after = Inf)) |> 
-  dplyr::mutate(order_id = as.integer(geom_name)) |> 
-  dplyr::arrange(order_id)
-
-most_used_geom_total_usage <- data_total_times_used_top_n |> 
-  dplyr::filter(geom_name != "All other geoms") |> 
-  dplyr::filter(total_times_used == max(total_times_used)) |> 
-  dplyr::pull(geom_name)
-
-most_used_geom_across_files <- data_used_across_files_top_n |> 
-  dplyr::filter(geom_name != "All other geoms") |> 
-  dplyr::filter(used_in_n_files == max(used_in_n_files)) |> 
-  dplyr::pull(geom_name)
-
-text_usage_vs_files <- dplyr::if_else(most_used_geom_across_files == most_used_geom_total_usage,
-                               paste("No surprises but your most used geom was also the geom that appeared in the most distinct files"),
-                               paste(praise::praise("${Exclamation}!"), "That is surprising! Your most used geom <b>was not</b> the same geom that appear in the most distinct files!"))
-```
-
 ::::: {style="--cr-narrative-font-size:var(--size-large);--cr-narrative-sidebar-width: 1fr;--cr-section-background-color:#AA3D4F;"}
 
 ::::{.cr-section layout="sidebar-right"}
 
-::: {#cr-look-at-arguments .large-fixed-text}
+::: {#cr-shout-out-most-common-geom .large-fixed-text}
 <span style='color:#F9F7F1;'>Shout out to `{r} most_used_geom_total_usage`</span>
 :::
 
-@cr-look-at-arguments
+@cr-shout-out-most-common-geom
 
 [That was your most used geom in 2025! Let's look at your other top geoms!]{.medim-fixed-text style='color:#F9F7F1;'}
 
@@ -437,9 +436,9 @@ data_geom_usage |>
 
 ### Oh, wow! Tell me more about UpSet Charts
 
-It's more than likely you've not seen many (or any!) UpSet Charts before. They were only invented in 2012, and the authors quite rightly ask for the original paper to be cited whenever they're used.
+It's more than likely you've not seen many (or any!) UpSet Charts before. They were only invented in 2012, and the authors quite rightly ask for the [original paper](https://doi.org.10.1109/TVCG.2014.2346248, 2014) to be cited whenever they're used.
 
-> Alexander Lex, Nils Gehlenborg, Hendrik Strobelt, Romain Vuillemot, Hanspeter Pfister. UpSet: Visualization of Intersecting Sets IEEE Transactions on Visualization and Computer Graphics (InfoVis), 20(12): 1983--1992, doi:10.1109/TVCG.2014.2346248, 2014.
+> Alexander Lex, Nils Gehlenborg, Hendrik Strobelt, Romain Vuillemot, Hanspeter Pfister. UpSet: Visualization of Intersecting Sets IEEE Transactions on Visualization and Computer Graphics (InfoVis), 20(12): 1983--1992, [doi:10.1109/TVCG.2014.2346248](https://doi.org.10.1109/TVCG.2014.2346248, 2014), 2014.
 
 <span>On to more fun things!</span>
 
@@ -698,3 +697,6 @@ This package and report depends on several tools from within R:
 > There's **lots** more you can do yourself with the `add_geom_usage_to_files()` function. Share what you build and consider contributing to the package, [https://github.com/charliejhadley/ggplot2wrapped](https://github.com/charliejhadley/ggplot2wrapped).
 
 \
+
+::: {.column-screen style="background-image:url(images/gpcds-wide-banner.png); background-size: 100vw; height: 396px; background-position: center +0%; background-repeat: no-repeat;"}
+:::

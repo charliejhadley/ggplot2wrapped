@@ -44,7 +44,10 @@ $brand-neutral: #F9F7F1;
 
 /*-- scss:rules --*/
 
-
+.section-arrow{
+  position: fixed; bottom: 0px; right: 0px;
+  font-size: 100px;
+}
 
 body {
   background-color: #F9F7F1;
