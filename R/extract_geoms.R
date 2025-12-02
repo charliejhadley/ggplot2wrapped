@@ -18,7 +18,53 @@ add_geom_usage_to_files <- function(data_file_info, data_geoms = ggplot2wrapped:
 
 }
 
+#' get_tidytuesday_repo_geom_usage
+#'
+#' `get_tidytuesday_repo_geom_usage()` get geom usage from a github repo (ideally
+#'  a tidytuesday rpeo)
+#'
+#' @export
+get_tidytuesday_repo_geom_usage <- function(repo_owner, repo_name, branch_name = "main", data_geoms = ggplot2wrapped::data_geoms, report_type = "simple"){
 
+
+  if(httr::http_error(paste0("http://github.com/",repo_owner,"/",repo_name))){
+    cli::cli_abort(
+      c("x" = "Looks like the repo described by {.arg repo_owner} and {.arg repo_name} does not exist (or might be private)",
+        "i" = "You provided: {.val {repo_owner}} and {.val {repo_name}}",
+        "v" = "Check you provided details for a public repo."
+      )
+    )
+  }
+
+  url_to_download_repo <- paste0("http://github.com/",repo_owner,"/",repo_name,"/archive/refs/heads/",branch_name, ".zip")
+
+  if(httr::http_error(url_to_download_repo)){
+
+    cli::cli_abort(
+      c("x" = "Looks like the {.arg branch_name} you provided doesn't exist",
+        "i" = "You provided: {.val {branch_name}}",
+        "v" = "Common alternatives to main include master, check the repo for what branch to use"
+      )
+    )
+
+  }
+
+
+
+
+
+  temp_dir <- tempfile()
+  dir.create(temp_dir, recursive = TRUE)
+
+  download.file(url = url_to_download_repo, destfile = file.path(temp_dir, "repo.zip"))
+
+  unzip(zipfile = file.path(temp_dir, "repo.zip"), exdir = temp_dir)
+
+  suppressWarnings(get_code_file_info(temp_dir) |>
+    ggplot2wrapped::add_geom_usage_to_files() |>
+    dplyr::mutate(file_path = stringr::str_remove(file_path, temp_dir)))
+
+}
 
 #' get_geoms_from_code_file
 #'
@@ -82,7 +128,7 @@ get_geoms_from_code_file <- function(file_path, geoms_dataset){
     )
 
 
-    data_geom_usage <- data_nodes |>
+    suppressWarnings(data_geom_usage <- data_nodes |>
       astgrepr::node_text_all() |>
       tibble::enframe(name = "geom_name", value = "geom_function_calls") |>
       tidyr::unnest(geom_function_calls) |>
@@ -95,6 +141,7 @@ get_geoms_from_code_file <- function(file_path, geoms_dataset){
       dplyr::mutate(n_times_used = dplyr::n(), .by = geom_name) |>
       dplyr::left_join(dplyr::select(geoms_dataset, geom_name, package_name),
                        by = c("geom_name"))
+    )
 
     ## Create single row tibble if no geoms found
     if(nrow(data_geom_usage) == 0){

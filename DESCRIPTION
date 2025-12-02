@@ -27,6 +27,7 @@ Imports:
     ggupset,
     GPCDStools,
     highcharter,
+    httr,
     igraph,
     lubridate,
     magick,
