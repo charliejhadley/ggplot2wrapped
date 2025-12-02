@@ -59,7 +59,7 @@ make_aes_type_percentile_highcharts <- function(data_geom_usage){
 #'
 #' @returns A ggplot2 chart.
 #' @export
-make_geom_usage_pies_highcharts <- function(data_summary_geom_calls, pie_measure_type = c("geom_total_usage", "geom_usage_in_files")){
+make_geom_usage_pies_highcharts <- function(data_geom_usage, pie_measure_type = "geom_total_usage"){
 
   if (!(pie_measure_type %in% c("geom_total_usage", "geom_usage_in_files"))) {
     cli::cli_abort(
@@ -76,16 +76,29 @@ make_geom_usage_pies_highcharts <- function(data_summary_geom_calls, pie_measure
   dplyr::pull(hex_code) |>
   c(GPCDStools::cols_gpcds$grey_mid)
 
-  data_summary_geom_calls |>
-    dplyr::arrange(dplyr::desc(total_times_used)) |>
-    dplyr::mutate(geom_name = dplyr::if_else(dplyr::row_number() <= 4, geom_name, "All other geoms")) |>
-    dplyr::summarise(total_times_used = sum(total_times_used), .by = geom_name)
+  if(pie_measure_type == "geom_total_usage"){
+      top_4_geom_usage <- data_geom_usage |>
+        summarise_ggplot2_geom_usage() |>
+        summarise_top_4_ggplot_geom_usage(summarise_by = "geoms")
+  }
+
+  if(pie_measure_type == "geom_usage_in_files"){
+    top_4_geom_usage <- data_geom_usage |>
+      summarise_ggplot2_geom_usage() |>
+      summarise_top_4_ggplot_geom_usage(summarise_by = "files")
+  }
+
+
+  # data_summary_geom_calls |>
+  #   dplyr::arrange(dplyr::desc(total_times_used)) |>
+  #   dplyr::mutate(geom_name = dplyr::if_else(dplyr::row_number() <= 4, geom_name, "All other geoms")) |>
+  #   dplyr::summarise(total_times_used = sum(total_times_used), .by = geom_name)
 
   hc_pie_chart <- switch(pie_measure_type,
          "geom_total_usage" = {
            highcharter::highchart() |>
              highcharter::hc_add_series(
-               data_total_times_used_top_n,
+               top_4_geom_usage,
                "pie",
                highcharter::hcaes(
                  x = geom_name,
@@ -116,7 +129,7 @@ make_geom_usage_pies_highcharts <- function(data_summary_geom_calls, pie_measure
          "geom_usage_in_files" = {
            highcharter::highchart() |>
              highcharter::hc_add_series(
-               data_used_across_files_top_n,
+               top_4_geom_usage,
                "pie",
                highcharter::hcaes(
                  x = geom_name,

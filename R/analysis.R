@@ -1,3 +1,75 @@
+#' Overall summary of ggplot2 geom usage
+#'
+#' `summarise_ggplot2_geom_usage()` summarises use of the standard geoms in the
+#' {ggplot2} package
+#'
+#' @param data_geom_usage Tibble containing geom usage data produced via
+#' `add_geom_usage_to_files()`.
+#'
+#' @export
+summarise_ggplot2_geom_usage <- function(data_geom_usage){
+
+  data_geom_usage |>
+    dplyr::filter(package_name == "ggplot2") |>
+    dplyr::group_by(geom_name) |>
+    dplyr::summarise(used_in_n_files = dplyr::n(),
+                     total_times_used = sum(n_times_used),
+                     avg_args_used = mean(n_args_in_call),
+                     max_args_used = max(n_args_in_call),
+                     times_used_with_aes = sum(ifelse(has_aes, 1, 0)),
+                     times_used_without_aes = sum(ifelse(!has_aes, 1, 0)))
+
+}
+
+#' Overall summary of ggplot2 geom usage
+#'
+#' `summarise_ggplot2_geom_usage()` summarises use of the standard geoms in the
+#' {ggplot2} package
+#'
+#' @param data_geom_summary Tibble containing ggplot2's geom usage data produced via
+#' `summarise_ggplot2_geom_usage()`.
+#'
+#' @export
+summarise_top_4_ggplot_geom_usage <- function(data_geom_summary, summarise_by = "geoms"){
+
+  if (!(summarise_by %in% c("geoms", "files"))) {
+    cli::cli_abort(
+      c("x" = "Invalid value for {.arg summarise_by}.",
+        "i" = "You provided: {.val {summarise_by}}",
+        "v" = "Permitted values are: {.val geoms} or {.val files}"
+      )
+    )
+  }
+
+  if(summarise_by == "geoms"){
+    data_geom_top_4 <- data_geom_summary |>
+      dplyr::arrange(dplyr::desc(total_times_used)) |>
+      dplyr::mutate(geom_name = dplyr::if_else(dplyr::row_number() <= 4, geom_name, "All other geoms")) |>
+      dplyr::summarise(total_times_used = sum(total_times_used), .by = geom_name) |>
+      dplyr::mutate(geom_name = forcats::fct_reorder(geom_name, total_times_used),
+                    geom_name = forcats::fct_rev(geom_name),
+                    geom_name = forcats::fct_relevel(geom_name, "All other geoms", after = Inf)) |>
+      dplyr::mutate(order_id = as.integer(geom_name)) |>
+      dplyr::arrange(order_id)
+  }
+
+  if(summarise_by == "files"){
+    data_geom_top_4 <- data_summary_geom_calls |>
+      dplyr::arrange(dplyr::desc(used_in_n_files)) |>
+      dplyr::mutate(geom_name = dplyr::if_else(dplyr::row_number() <= 4, geom_name, "All other geoms")) |>
+      dplyr::summarise(used_in_n_files = sum(used_in_n_files), .by = geom_name) |>
+      dplyr::mutate(geom_name = forcats::fct_reorder(geom_name, used_in_n_files),
+                    geom_name = forcats::fct_rev(geom_name),
+                    geom_name = forcats::fct_relevel(geom_name, "All other geoms", after = Inf)) |>
+      dplyr::mutate(order_id = as.integer(geom_name)) |>
+      dplyr::arrange(order_id)
+  }
+
+  data_geom_top_4
+
+}
+
+
 #' Summarise geom usage per day
 #'
 #' `summarise_per_day()` utility function for summarising geom usage by several

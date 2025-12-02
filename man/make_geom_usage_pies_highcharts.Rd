@@ -5,16 +5,16 @@
 \title{Interactive pie chart of geom usage}
 \usage{
 make_geom_usage_pies_highcharts(
-  data_summary_geom_calls,
-  pie_measure_type = c("geom_total_usage", "geom_usage_in_files")
+  data_geom_usage,
+  pie_measure_type = "geom_total_usage"
 )
 }
 \arguments{
-\item{pie_measure_type}{How should pie chart summarise geom used? Default to
-"geom_total_usage", can also be "geom_usage_in_files"}
-
 \item{data_geom_usage}{Tibble containing geom usage data produced via
 \code{add_geom_usage_to_files()}.}
+
+\item{pie_measure_type}{How should pie chart summarise geom used? Default to
+"geom_total_usage", can also be "geom_usage_in_files"}
 }
 \value{
 A ggplot2 chart.

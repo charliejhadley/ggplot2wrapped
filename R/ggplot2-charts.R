@@ -297,7 +297,7 @@ make_geom_upset_chart <- function(data_geom_usage, focus = c("geom", "date")){
 
 
   data_geom_usage |>
-    dplyr::summarise_per_file() |>
+    ggplot2wrapped::summarise_per_file() |>
     ggplot2::ggplot(ggplot2::aes(x=geoms)) +
     ggplot2::geom_bar(fill = cols_gpcds$chart_tertiary_lighter) +
     ggplot2::scale_x_upset(reverse = TRUE) +

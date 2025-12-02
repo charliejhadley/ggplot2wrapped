@@ -39,7 +39,7 @@ params:
 # library("janitor")
 
 if (params$executed_from == "direct_from_file") {
-  load(system.file("quarto", "ggplot2wrapped-2025","data_example_geom_usage.RData", package = "ggplot2wrapped"))
+  load(system.file("quarto-reports", "ggplot2-unwrapped-2025_scrollytelling","data_example_geom_usage.RData", package = "ggplot2wrapped"))
 
   data_geom_usage <- data_example_geom_usage
   
@@ -55,38 +55,17 @@ if (params$executed_from == "direct_from_file") {
 
 ```{r}
 data_summary_geom_calls <- data_geom_usage |> 
-  dplyr::filter(package_name == "ggplot2") |> 
-  dplyr::group_by(geom_name) |> 
-  dplyr::summarise(used_in_n_files = dplyr::n(),
-            total_times_used = sum(n_times_used),
-            avg_args_used = mean(n_args_in_call),
-            max_args_used = max(n_args_in_call),
-            times_used_with_aes = sum(ifelse(has_aes, 1, 0)),
-            times_used_without_aes = sum(ifelse(!has_aes, 1, 0)))
+  ggplot2wrapped::summarise_ggplot2_geom_usage()
 
 data_total_times_used <- data_summary_geom_calls |> 
   dplyr::slice_max(total_times_used,
             n = 4)
 
 data_total_times_used_top_n <- data_summary_geom_calls |> 
-  dplyr::arrange(dplyr::desc(total_times_used)) |> 
-  dplyr::mutate(geom_name = dplyr::if_else(dplyr::row_number() <= 4, geom_name, "All other geoms")) |> 
-  dplyr::summarise(total_times_used = sum(total_times_used), .by = geom_name) |> 
-  dplyr::mutate(geom_name = forcats::fct_reorder(geom_name, total_times_used),
-         geom_name = forcats::fct_rev(geom_name),
-         geom_name = forcats::fct_relevel(geom_name, "All other geoms", after = Inf)) |> 
-  dplyr::mutate(order_id = as.integer(geom_name)) |> 
-  dplyr::arrange(order_id)
+  ggplot2wrapped::summarise_top_4_ggplot_geom_usage(summarise_by = "geoms")
 
 data_used_across_files_top_n <- data_summary_geom_calls |> 
-  dplyr::arrange(dplyr::desc(used_in_n_files)) |>
-  dplyr::mutate(geom_name = dplyr::if_else(dplyr::row_number() <= 4, geom_name, "All other geoms")) |> 
-  dplyr::summarise(used_in_n_files = sum(used_in_n_files), .by = geom_name) |> 
-  dplyr::mutate(geom_name = forcats::fct_reorder(geom_name, used_in_n_files),
-         geom_name = forcats::fct_rev(geom_name),
-         geom_name = forcats::fct_relevel(geom_name, "All other geoms", after = Inf)) |> 
-  dplyr::mutate(order_id = as.integer(geom_name)) |> 
-  dplyr::arrange(order_id)
+  ggplot2wrapped::summarise_top_4_ggplot_geom_usage(summarise_by = "files")
 
 most_used_geom_total_usage <- data_total_times_used_top_n |> 
   dplyr::filter(geom_name != "All other geoms") |> 
@@ -204,42 +183,8 @@ Looking at your *top 4 geoms* and lumping everything else together...
 ```{r}
 #| fig-width: 6
 #| fig.height: 6
-
-vec_colours_pie <- GPCDStools::colours_gpcds |> 
-  dplyr::filter(type == "tertiary_lighter") |> 
-  dplyr::slice(1:4) |> 
-  dplyr::pull(hex_code) |> 
-  c(GPCDStools::cols_gpcds$grey_mid)
-
-highcharter::highchart() |> 
-  highcharter::hc_add_series(
-    data_total_times_used_top_n, 
-    "pie",
-    highcharter::hcaes(
-      x = geom_name,
-      y = total_times_used
-      ),
-    center = c(50, 50), 
-                innerSize="50%",
-                dataLabels = list(distance = 18,
-                                  format = '<b>{point.name}</b>:<br>Used {point.y} times<br>({point.percentage:.0f} %)',
-                                  style = list(fontSize = 16))) |> 
-  highcharter::hc_colors(vec_colours_pie) |> 
-  highcharter::hc_plotOptions(
-    innersize="50%", 
-    startAngle=90, 
-    endAngle=90,
-    center=list('50%', '75%'),
-    size='110%'
-    # width = "300px"
-    ) |> 
-  highcharter::hc_title(text = 'Total times<br>geom used',
-        verticalAlign = 'middle', 
-        align = 'center', 
-        style = list(fontSize = 24),
-        y = 0, 
-        floating = TRUE
-        )
+data_geom_usage |> 
+  ggplot2wrapped::make_geom_usage_pies_highcharts(pie_measure_type = "geom_total_usage")
 ```
 :::
 
@@ -253,37 +198,8 @@ highcharter::highchart() |>
 ```{r}
 #| fig-width: 6
 #| fig.height: 6
-# make_geom_usage_pies_highcharts(data_summary_geom_calls, )
-
-highcharter::highchart() |>
-  highcharter::hc_add_series(
-    data_used_across_files_top_n,
-    "pie",
-    highcharter::hcaes(
-      x = geom_name,
-      y = used_in_n_files
-      ),
-    center = c(50, 50),
-                innerSize="50%",
-                dataLabels = list(distance = 18,
-                                  format = '<b>{point.name}</b>:<br>Used in {point.y} files<br>({point.percentage:.0f} %)',
-                                  style = list(fontSize = 16))) |>
-  highcharter::hc_colors(vec_colours_pie) |>
-  highcharter::hc_plotOptions(
-    innersize="50%",
-    startAngle=90,
-    endAngle=90,
-    center=list('50%', '75%'),
-    size='110%'
-    # width = "300px"
-    ) |>
-  highcharter::hc_title(text = '# of files geom<br>occured in',
-        verticalAlign = 'middle',
-        align = 'center',
-        style = list(fontSize = 24),
-        y = 0,
-        floating = TRUE
-        )
+data_geom_usage |> 
+  ggplot2wrapped::make_geom_usage_pies_highcharts(pie_measure_type = "geom_usage_in_files")
 ```
 :::
 
